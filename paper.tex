@@ -630,8 +630,20 @@ sets as a congested block, or can select to permanently set the congestion flag
 to be permanently on or off. It's expected that most honest miners would use the
 default behavior defined in their miner and not organize a 51\% attack.
 
-For example, if a parent transaction is spent by a child with a nSequence value
-of 10, if there have been 10 blocks and one of them has the 
+For example, if a parent transaction output is spent by a child with a nSequence
+value of 10, one must wait 10 confirmations before the transaction becomes
+valid. However, if the timestop flag has been set, the counting of confirmations
+stops, even with new blocks. If 6 confirmations have elapsed (4 more are
+necessary for the transaction to be valid), and the timestop block has been set
+on the 7th block, that block does not count towards the nSequence requirement of
+10 confirmations; the child is still at 6 blocks for the relative confirmation
+value. Functionally, this will be stored as some kind of auxiliary timestop
+block height which is used only for tracking the timestop value. When the
+timestop bit is set, all transactions using an nSequence value will stop
+counting until the timestop bit has been unset. This gives sufficient time and
+block-space for transactions at the current auxiliary timestop block height to
+enter into the blockchain, which can prevent systemic attackers from
+successfully attacking the system.
 
 However, this requires some kind of flag in the block to designate whether it
 is a timestop block. For full SPV compatibility (Simple Payment Verification;
@@ -1861,7 +1873,7 @@ the Lightning Network:
 		micropayments, especially with the smallest of values. With this
 		system, near-instant micropayments using Bitcoin without a 3rd
 		party custodian would be possible. It would enable, for example,
-		paying per-megative for internet service or per-article to read
+		paying per-megabyte for internet service or per-article to read
 		a newspaper.
 	
 	\item Financial Smart Contracts and Escrow. Financial contracts are
