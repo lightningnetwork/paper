@@ -683,7 +683,7 @@ and enforce penalties without trusting the counterparty.
 The intent of creating a new Commitment Transaction is to invalidate all old
 Commitment Transactions when updating the new balance with a new Commitment
 Transaction. Invalidation of old transactions can happen by making an output be
-a Revocable Sequence Verification Contract (RSMC). To invalidate a transaction,
+a Revocable Sequence Maturity Contract (RSMC). To invalidate a transaction,
 a superseding transaction will be signed and exchanged by both parties that 
 gives all funds to the counterparty in the event an older transaction is
 incorrectly broadcast. The incorrect broadcast is identified by creating two
@@ -753,7 +753,7 @@ broadcast the correct Commitment Transaction (C1b).
 After the Commitment Transaction has been in the blockchain for 1000 blocks,
 Bob can then broadcast the Revocable Delivery transaction. He must wait 1000
 blocks to prove he has not revoked this Commitment Transaction (C1b). After
-1000 blocks, the Revoable Delivery transaction will be able to be included in a
+1000 blocks, the Revocable Delivery transaction will be able to be included in a
 block. If it is attempted to be included in a block before 1000 confirmations,
 the transaction will be invalid up until after 1000 confirmations have passed
 (at which point it will become valid if the output has not yet been redeemed).
@@ -841,7 +841,7 @@ broadcasts an incorrect (deprecated and invalidated Commitment Transaction), all
 the money will go to one's counterparty. For example, if Bob broadcasts C1b, so
 long as Alice watches the blockchain within the predefined number of blocks (in
 this case, 1000 blocks), Alice will be able to take all the money in this
-channel by broadcasting RD1b. Even if the present balance of the Commitment
+channel by broadcasting BR1b. Even if the present balance of the Commitment
 state (C2a/C2b) is 0.4 BTC to Alice and 0.6 BTC to Bob, because Bob violated the
 terms of the contract, all the money goes to Alice as a penalty. Functionally,
 the Revocable Transaction acts as a proof to the blockchain that Bob has
