@@ -753,7 +753,7 @@ broadcast the correct Commitment Transaction (C1b).
 After the Commitment Transaction has been in the blockchain for 1000 blocks,
 Bob can then broadcast the Revocable Delivery transaction. He must wait 1000
 blocks to prove he has not revoked this Commitment Transaction (C1b). After
-1000 blocks, the Revoable Delivery transaction will be able to be included in a
+1000 blocks, the Revocable Delivery transaction will be able to be included in a
 block. If it is attempted to be included in a block before 1000 confirmations,
 the transaction will be invalid up until after 1000 confirmations have passed
 (at which point it will become valid if the output has not yet been redeemed).
@@ -1777,7 +1777,7 @@ OP\_CHECKLOCKTIMEVERIFY.
 Changes are necessary to bitcoin, such as the malleability soft-fork.
 Additionally, if this system becomes popular, it will be necessary for the
 system to securely transact with many users and some kind of structure like a
-blockheigh timestop will be desirable. This system assumes such changes to
+blockheight timestop will be desirable. This system assumes such changes to
 enable Lightning Network to exist entirely, as well as soft-forks ensuring the
 security is robust against attackers will occur. While the system may continue
 to operate with only some time lock and malleability soft-forks, there will be
@@ -1899,9 +1899,9 @@ Conducting all global payment transactions on the blockchain today implies
 miners will need to do an incredible amount of computation, severely limiting
 bitcoin scalability and full nodes to a few centralized processors.
 
-If all transaction using Bitcoin were conducted inside a network of micropayment
-channels, to enable 7 billion people to make two channels per year with
-unlimited transactions inside the channel, it would require 133 MB blocks
+If all transactions using Bitcoin were conducted inside a network of
+micropayment channels, to enable 7 billion people to make two channels per year
+with unlimited transactions inside the channel, it would require 133 MB blocks
 (presuming 500 bytes per transaction and 52560 blocks per year). Current
 generation desktop computers will be able to run a full node with old blocks
 pruned out on 2TB of storage.
