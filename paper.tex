@@ -42,8 +42,8 @@
 
 The bitcoin protocol can encompass the global financial transaction volume in
 all electronic payment systems today, without a single custodial third party
-holding funds or requiring participants to have any more than a computer on a
-home broadband connection. A decentralized system is proposed whereby
+holding funds or requiring participants to have anything more than a computer
+using a broadband connection. A decentralized system is proposed whereby
 transactions are sent over a network of micropayment channels (a.k.a. payment
 channels or transaction channels) whose transfer of value occurs
 off-blockchain. If Bitcoin transactions can be signed with a new sighash type
@@ -64,41 +64,45 @@ protocol whereby all state modifications to the ledger are broadcast to all
 participants. It is through this ``gossip protocol'' that consensus of the
 state, everyone's balances, is agreed upon. If each node in the bitcoin network
 must know about every single transaction that occurs globally, that may create
-a significant drag on the ability for the network to encompass all global
+a significant drag on the ability of the network to encompass all global
 financial transactions. It would instead be desirable to encompass all
 transactions in a way that doesn't sacrifice the decentralization and security
 that the network provides.
 
-The payment network Visa has achieved 47,000 peak transactions per second on its
-network during the 2013 holidays\cite{visa}, and averages hundreds of millions
-per day. Currently, Bitcoin supports less than 7 transactions per second with a
-1 megabyte block limit. If we use an average of 300 bytes per bitcoin
-transaction and assumed unlimited block sizes, an equivalent capacity to peak
-Visa transaction volume of 47,000/tps would be nearly 8 gigabytes per Bitcoin
-block, every ten minutes on average. Continuously, that would be over 400
-terabytes per year. Clearly, that isn't feasible today. No home computer in the
-world can operate with that kind of bandwidth and storage. If Bitcoin is to
-replace all electronic payments in the future, not just Visa, it would result in
-outright collapse of the Bitcoin network, or at best, extreme centralization of
-Bitcoin nodes and miners to the only ones who could afford it. This
-centralization would then defeat aspects of network decentralization that make
-Bitcoin secure, as the ability for entities to validate the chain is what
-allows Bitcoin to ensure ledger accuracy and security. Having fewer validators
-due to larger blocks not only implies fewer individuals ensuring ledger
-accuracy, but also results in fewer entities that would be able to validate the
-blockchain as part of the mining process, which results in encouraging miner
-centralization. Extremely large blocks, for example in the above case of 8
-gigabytes every 10 minutes on average, would imply that only a few parties
-would be able to do block validation. This creates a great possibility that
-entities will end up trusting centralized parties. Having privileged trusted
-parties creates a social trap whereby the central party will not act in the
-interest of an individual (principal-agent problem), e.g. rentierism by
-charging higher fees to mitigate the incentive to act dishonestly. In extreme
-cases, this manifests as individuals sending funds to centralized trusted
-custodians who have full custody of customers funds. Such arrangements, as are
-common today, create severe counterparty risk. A prerequisite to prevent that
-kind of centralization from occurring would require the ability for bitcoin to
-be validated by a single consumer-level computer on a home broadband
+The payment network Visa achieved 47,000 peak transactions per second (tps) on
+its network during the 2013 holidays\cite{visa}, and currently averages hundreds
+of millions per day. Currently, Bitcoin supports less than 7 transactions per
+second with a 1 megabyte block limit. If we use an average of 300 bytes per
+bitcoin transaction and assumed unlimited block sizes, an equivalent capacity to
+peak Visa transaction volume of 47,000/tps would be nearly 8 gigabytes per
+Bitcoin block, every ten minutes on average. Continuously, that would be over
+400 terabytes of data per year.
+
+Clearly, achieving Visa-like capacity on the Bitcoin network isn't feasible
+today. No home computer in the world can operate with that kind of bandwidth and
+storage. If Bitcoin is to replace all electronic payments in the future, and not
+just Visa, it would result in outright collapse of the Bitcoin network, or at
+best, extreme centralization of Bitcoin nodes and miners to the only ones who
+could afford it. This centralization would then defeat aspects of network
+decentralization that make Bitcoin secure, as the ability for entities to
+validate the chain is what allows Bitcoin to ensure ledger accuracy and
+security.
+
+Having fewer validators due to larger blocks not only implies fewer individuals
+ensuring ledger accuracy, but also results in fewer entities that would be able
+to validate the blockchain as part of the mining process, which results in
+encouraging miner centralization. Extremely large blocks, for example in the
+above case of 8 gigabytes every 10 minutes on average, would imply that only a
+few parties would be able to do block validation. This creates a great
+possibility that entities will end up trusting centralized parties. Having
+privileged, trusted parties creates a social trap whereby the central party will
+not act in the interest of an individual (principal-agent problem), e.g.
+rentierism by charging higher fees to mitigate the incentive to act dishonestly.
+In extreme cases, this manifests as individuals sending funds to centralized
+trusted custodians who have full custody of customers' funds. Such arrangements,
+as are common today, create severe counterparty risk. A prerequisite to prevent
+that kind of centralization from occurring would require the ability for bitcoin
+to be validated by a single consumer-level computer on a home broadband
 connection. By ensuring that full validation can occur cheaply, Bitcoin nodes
 and miners will be able to prevent extreme centralization and trust, which
 ensures extremely low transaction fees.
@@ -113,7 +117,7 @@ even better if the bitcoin network supported a near-unlimited number of
 transactions per second with extremely low fees for micropayments. Many
 micropayments can be sent sequentially between two parties to enable any size
 of payments. Micropayments would enable unbunding, less trust and
-commodification of services, such as payments of per-megabyte of internet
+commodification of services, such as payments for per-megabyte internet
 service. To be able to achieve these micropayment use cases, however, would
 require severely reducing the amount of transactions that end up being
 broadcast on the global Bitcoin blockchain.
@@ -182,12 +186,13 @@ disagrees about the current balance of funds (or time the tree fell), then it
 is one's word against another. Without cryptographic signatures, the blockchain
 will not know who owns what. 
 
-If the balance in the channel were 0.05 for Alice and 0.05 to Bob, and the
-transaction is now 0.07 to Alice and 0.03, the network needs to know which one
-is the current balance. Blockchain transactions solve this problem by using the
-blockchain ledger as a timestamping system. At the same time, it is desirable
-to create a system which does not actively use this timestamping system unless
-absolutely necessary, as it can become costly to the network.
+If the balance in the channel is 0.05 BTC to Alice and 0.05 BTC to Bob, and the
+balance after a transaction is 0.07 BTC to Alice and 0.03 BTC to Bob, the
+network needs to know which set of balances is correct. Blockchain transactions
+solve this problem by using the blockchain ledger as a timestamping system. At
+the same time, it is desirable to create a system which does not actively use
+this timestamping system unless absolutely necessary, as it can become costly to
+the network.
 
 Instead, both parties can commit to signing a transaction and not broadcasting
 this transaction. So if Alice and Bob commit funds into a 2-of-2 multisignature
@@ -267,7 +272,7 @@ requires the malleability soft-fork described in Appendix A to enable
 near-infinite scalability while mitigating risks of intermediate node default.
 
 By chaining together multiple micropayment channels, it is possible to create a
-network of transaction paths. Paths can be routing using a BGP-like system, and
+network of transaction paths. Paths can be routed using a BGP-like system, and
 the sender may designate a particular path to the recipient. The output scripts
 are encumbered by a hash, which is generated by the recipient. By disclosing
 the input to that hash, the recipient's counterparty will be able to pull funds
@@ -352,7 +357,7 @@ Transaction (parent). However, only the Funding Transaction is broadcast on the
 blockchain.
 
 Since the Funding Transaction has already entered into the blockchain, and the
-output are a 2-of-2 multisignature transaction which requires the agreement of
+output is a 2-of-2 multisignature transaction which requires the agreement of
 both parties to spend from, Commitment Transactions are used to express the
 present balance. If only one 2-of-2 signed Commitment Transaction is exchanged
 between both parties, then both parties will be sure that they are able to get
@@ -429,8 +434,8 @@ one cannot create payment channels under this model.
 \subsubsection{Commitment Transactions: Ascribing Blame}
 
 Since any signed Commitment Transaction may be broadcast on the blockchain, and
-only one can be successfully broadcast, it is necessary to enforce that old
-Commitment Transactions do not get broadcast. It is not possible to revoke tens
+only one can be successfully broadcast, it is necessary to prevent old
+Commitment Transactions from being broadcast. It is not possible to revoke tens
 of thousands of transactions in Bitcoin, so an alternate method is necessary.
 Instead of active revocation enforced by the blockchain, it's necessary to
 construct the channel itself in similar manner to a Fidelity Bond, whereby both
@@ -499,8 +504,8 @@ Mark Freidenbach has proposed that Sequence Numbers can be enforcible via a
 relative block maturity of the parent transaction via a
 soft-fork\cite{seqnum}. This would allow some basic ability to ensure some form
 of relative block confirmation time lock on the spending script. In addition, an
-additional opcode, OP\_CHECKSEQUENCEVERIFY (a.k.a.
-OP\_RELATIVECHECKLOCKTIMEVERIFY), would permit further abilities,
+additional opcode, OP\_CHECKSEQUENCEVERIFY\cite{csv} (a.k.a.
+OP\_RELATIVECHECKLOCKTIMEVERIFY)\cite{relCLTV}, would permit further abilities,
 including allowing a stop-gap solution before a more permanent solution for
 resolving transaction malleability. A future version of this paper will include
 proposed solutions.
@@ -653,7 +658,7 @@ place to put in this flag in the block header: in the block time and in the
 block version. The block time may not be safe due to the last bits being used as
 an entropy source for some ASIC miners, therefore a bit may need to be consumed
 for timestop flags. Another option would be to hardcode timestop activation as a
-hard consensus rules (e.g. via block size), however this may make things less
+hard consensus rule (e.g. via block size), however this may make things less
 flexible. By setting sane defaults for timestop rules, these rules can be
 changed without consensus soft-forks.
 
@@ -683,18 +688,18 @@ and enforce penalties without trusting the counterparty.
 The intent of creating a new Commitment Transaction is to invalidate all old
 Commitment Transactions when updating the new balance with a new Commitment
 Transaction. Invalidation of old transactions can happen by making an output be
-a Revocable Sequence Verification Contract (RSMC). To invalidate a transaction,
-a superseding transaction will be signed and exchanged by both parties that 
-gives all funds to the counterparty in the event an older transaction is
-incorrectly broadcast. The incorrect broadcast is identified by creating two
-different Commitment Transactions with the same final balance outputs, however
-the payment to oneself is encumbered by a RSMC.
+a Revocable Sequence Maturity Contract (RSMC). To invalidate a transaction, a
+superseding transaction will be signed and exchanged by both parties that gives
+all funds to the counterparty in the event an older transaction is incorrectly
+broadcast. The incorrect broadcast is identified by creating two different
+Commitment Transactions with the same final balance outputs, however the payment
+to oneself is encumbered by an RSMC.
 
 In effect, there are two Commitment Transactions from a single Funding
 Transaction 2-of-2 outputs. Of these two Commitment Transactions, only one can
 enter into the blockchain. Each party within a channel has one version of this
 contract. So if this is the first Commitment Transaction pair, Alice's
-Commitment Transaction is defined a C1a, and Bob's Commitment Transaction is
+Commitment Transaction is defined as C1a, and Bob's Commitment Transaction is
 defined as C1b. By broadcasting a Commitment Transaction, one is requesting for
 the channel to close out and end. The first two outputs for the Commitment
 Transaction include a Delivery Transaction (payout) of the present unallocated
@@ -754,9 +759,10 @@ After the Commitment Transaction has been in the blockchain for 1000 blocks,
 Bob can then broadcast the Revocable Delivery transaction. He must wait 1000
 blocks to prove he has not revoked this Commitment Transaction (C1b). After
 1000 blocks, the Revocable Delivery transaction will be able to be included in a
-block. If it is attempted to be included in a block before 1000 confirmations,
-the transaction will be invalid up until after 1000 confirmations have passed
-(at which point it will become valid if the output has not yet been redeemed).
+block. If a party attempt to include the Revocable Delivery transaction in a
+block before 1000 confirmations, the transaction will be invalid up until after
+1000 confirmations have passed (at which point it will become valid if the
+output has not yet been redeemed).
 
 \begin{figure}[H]
 	\makebox[\linewidth]{
@@ -825,12 +831,12 @@ they will get all the money in the channel when this agreement is violated.
 		\includegraphics[width=1.3\linewidth]{figures/newcommit-br.pdf}
 	}
 	\caption{
-		When C2a and C2b exists, both exchange Breach Remedy
+		When C2a and C2b exist, both parties exchange Breach Remedy
 		transactions. Both parties now have explicit economic incentive
 		to avoid broadcasting old Commitment Transactions (C1a/C1b).
 		If either party wishes to close out the channel, they will only
 		use C2a (Alice) or C2b (Bob). If Alice broadcasts C1a, all her
-		money will go to Bob. If Bob broadcasts C1b, all her money will
+		money will go to Bob. If Bob broadcasts C1b, all his money will
 		go to Alice. See previous figure for C2a/C2b outputs.
 	}
 \end{figure}
@@ -890,30 +896,30 @@ channel.
 To create revocable Commitment Transactions, it requires proper construction of
 the channel from the beginning, and only signing transactions which may be
 broadcast at any time in the future, while ensuring that one will not lose out
-by uncooperative or malicious counterparties. This requires determining which
-public key to use for new commitments, as using SIGHASH\_NOINPUT requires using
-unique keys for each Commitment Transaction RSMC (and HTLC) output. We use $P$
-to designate pubkeys and $K$ to designate the corresponding private key used to
-sign.
+due to uncooperative or malicious counterparties. This requires determining
+which public key to use for new commitments, as using SIGHASH\_NOINPUT requires
+using unique keys for each Commitment Transaction RSMC (and HTLC) output. We use
+$P$ to designate pubkeys and $K$ to designate the corresponding private key used
+to sign.
 
 When generating the first Commitment Transaction, Alice and Bob agree to create
 a multisig output from a Funding Transaction with a single $multisig(P_{AliceF},
-P_{BobF})$ output, funded from 0.5 from Alice and Bob for a total of 1 BTC. This
-output is a Pay to Script Hash\cite{p2sh} transaction, which requires both Alice
-and Bob to both agree to spend from the Funding Transaction. They do not yet
-make the Funding Transaction (F) spendable. Additionally, $P_{AliceF}$ and
+P_{BobF})$ output, funded with 0.5 BTC from Alice and Bob for a total of 1 BTC.
+This output is a Pay to Script Hash\cite{p2sh} transaction, which requires both
+Alice and Bob to both agree to spend from the Funding Transaction. They do not
+yet make the Funding Transaction (F) spendable. Additionally, $P_{AliceF}$ and
 $P_{BobF}$ are only used for the Funding Transaction, they are not used for
 anything else.
 
 Since the Delivery transaction is just a P2PKH output (bitcoin addresses
 beginning with 1) or P2SH transaction (commonly recognized as addresses
-beginning with the 3) which the counterparties designates
-beforehand, this can be generated as an output of $P_{AliceD}$ and $P_{BobD}$.
-For simplicity, these output addresses will remain the same throughout the
-channel, since its funds are fully controlled by its designated recipient after
-the Commitment Transaction enters the blockchain. If desired, but not
-necessary, both parties may update and change $P_{AliceD}$ and $P_{BobD}$ for
-future Commitment Transactions.
+beginning with the 3) which the counterparties designate beforehand, this can be
+generated as an output of $P_{AliceD}$ and $P_{BobD}$. For simplicity, these
+output addresses will remain the same throughout the channel, since its funds
+are fully controlled by its designated recipient after the Commitment
+Transaction enters the blockchain. If desired, but not necessary, both parties
+may update and change $P_{AliceD}$ and $P_{BobD}$ for future Commitment
+Transactions.
 
 Both parties exchange pubkeys they intend to use for the RSMC (and HTLC
 described in future sections) for the Commitment Transaction. Each set of
@@ -1027,11 +1033,11 @@ construction, a Hashed Timelock Contract (HTLC).
 
 The purpose of an HTLC is to allow for global state across multiple nodes via
 hashes. This global state is ensured by time commitments and time-based
-unencumbering of resources via disclosure of preimages. Transactional "locking"
-occurs globally via commitments, at any point in time a single participant is
-responsible for disclosing to the next participant whether they have knowledge
-of the preimage $R$. This construction does not require custodial trust in one's
-channel counterparty, nor any other participant in the network.
+unencumbering of resources via disclosure of preimages. Transactional
+``locking'' occurs globally via commitments, at any point in time a single
+participant is responsible for disclosing to the next participant whether they
+have knowledge of the preimage $R$. This construction does not require custodial
+trust in one's channel counterparty, nor any other participant in the network.
 
 In order to achieve this, an HTLC must be able to create certain transactions
 which are only valid after a certain date, using nLockTime, as well as
@@ -1108,7 +1114,7 @@ transaction.
 		that there are two possible spends from an HTLC output. If Bob
 		can produce the preimage $R$ within 3 days and he can redeem
 		path 1. After three days, Alice is able to broadcast path 2.
-		When 3 days have elapsed either is valid. This model, however
+		When 3 days have elapsed either is valid. This model, however,
 		doesn't work with multiple Commitment Transactions.
 	}
 \end{figure}
@@ -1226,11 +1232,11 @@ maturity of 1000 blocks, and $multisig(P_{Alice4}, P_{Bob4})$ with no
 requirement for confirmation maturity. Only Alice can broadcast HT1a since only
 Bob gave his signature for HT1a to Alice.
 
-After HT1a enters into the blockchain and 1000 block confirmations, a HTLC
-Timeout Revocable Delivery transaction (HTRD1a) may be broadcast by Alice which
-consumes $multisig(P_{Alice3}, P_{Bob3})$. Only Alice can broadcast HTRD1a 1000
-blocks after HT1a is broadcast since only Bob gave his signature for HTRD1a to
-Alice. This transaction can be revocable when another transaction supersedes
+After HT1a enters into the blockchain and 1000 block confirmations occur, an
+HTLC Timeout Revocable Delivery transaction (HTRD1a) may be broadcast by Alice
+which consumes $multisig(P_{Alice3}, P_{Bob3})$. Only Alice can broadcast HTRD1a
+1000 blocks after HT1a is broadcast since only Bob gave his signature for HTRD1a
+to Alice. This transaction can be revocable when another transaction supersedes
 HTRD1a using $multisig(P_{Alice4}, P_{Bob4})$ which does not have any block
 maturity requirements.
 
@@ -1255,13 +1261,13 @@ $multisig(P_{Alice8}, P_{Bob8})$ which does not have any block maturity
 requirements. Only Bob can broadcast HE1b since only Alice gave her signature
 for HE1b to Bob.
 
-After HE1b enters into the blockchain and 1000 block confirmations, a HTLC
-Execution Revocable Delivery transaction (HERD1b) may be broadcast by Bob which
-consumes $multisig(P_{Alice7}, P_{Bob7})$. Only Bob can broadcast HERD1b 1000
-blocks after HE1b is broadcast since only Alice gave her signature for HERD1b to
-Bob. This transaction can be revocable when another transaction supersedes
-HERD1b using $multisig(P_{Alice8}, P_{Bob8})$ which does not have any block
-maturity requirements.
+After HE1b enters into the blockchain and 1000 block confirmations occur, an
+HTLC Execution Revocable Delivery transaction (HERD1b) may be broadcast by Bob
+which consumes $multisig(P_{Alice7}, P_{Bob7})$. Only Bob can broadcast HERD1b
+1000 blocks after HE1b is broadcast since only Alice gave her signature for
+HERD1b to Bob. This transaction can be revocable when another transaction
+supersedes HERD1b using $multisig(P_{Alice8}, P_{Bob8})$ which does not have any
+block maturity requirements.
 
 \subsection{HTLC Off-chain Termination}
 
@@ -1301,7 +1307,7 @@ their own private keys used in the HTLC transactions.
 
 For example, Alice wishes to terminate the HTLC, Alice will disclose
 $K_{Alice1}$ and $K_{Alice4}$ to Bob. Correspondingly if Bob wishes to terminate
-the HTLC, Bob will disclose $K_{Bob1}$ and $K_{Bob4}$ to Alice. After the
+the HTLC, Bob will disclose $K_{Bob6}$ and $K_{Bob8}$ to Alice. After the
 private keys are disclosed to the counterparty, if Alice broadcasts C2a, Bob
 will be able to take all the funds from the HTLC immediately. If Bob broadcasts
 C2b, Alice will be able to take all funds from the HTLC immediately. Note that
@@ -1321,11 +1327,11 @@ well.
 	}
 \end{figure}
 
-Since both parties are able to prove to each other about the current state to
-each other, they can come to agreement on the current balance inside the
-channel. Since they may broadcast the current state on the blockchain, they are
-able to come to agreement on netting out and terminating the HTLC with a new
-Commitment Transaction.
+Since both parties are able to prove the current state to each other, they can
+come to agreement on the current balance inside the channel. Since they may
+broadcast the current state on the blockchain, they are able to come to
+agreement on netting out and terminating the HTLC with a new Commitment
+Transaction.
 
 \subsection{HTLC Formation and Closing Order}
 
@@ -1354,7 +1360,7 @@ To close out an HTLC, the process is as follows (from C2 to C3):
 		Commitment 2, if they do so, their funds will be going to the
 		counterparty. The old Commitment and old HTLC are now revoked
 		and fully terminated. Only the new Commitment 3 remains, which
-		does not have at HTLC.
+		does not have an HTLC.
 \end{enumerate}
 
 When the HTLC has been closed, the funds are updated so that the present balance
@@ -1413,15 +1419,15 @@ transactions without a need for significant storage costs.
 
 It is possible for each participant to generate different versions of
 transactions to ascribe blame as to who broadcast the transaction on the
-blockchain. By having the knowledge who broadcast a transaction and the ability
+blockchain. By having knowledge of who broadcast a transaction and the ability
 to ascribe blame, a third party service can be used to hold fees in a 2-of-3
 multisig escrow. If one wishes to broadcast the transaction chain instead of
 agreeing to do a Funding Close or replacement with a new Commitment Transaction,
-one would communicate with the third party and broadcast it to the blockchain.
-If the counterparty refuses the notice from the third party to cooperate, the
-penalty is rewarded to the non-cooperative party. In most instances,
-participants may be indifferent to the transaction fees in the event of an
-uncooperative counterparty.
+one would communicate with the third party and broadcast the chain to the
+blockchain. If the counterparty refuses the notice from the third party to
+cooperate, the penalty is rewarded to the non-cooperative party. In most
+instances, participants may be indifferent to the transaction fees in the event
+of an uncooperative counterparty.
 
 One should pick counterparties in the channel who will be cooperative, but is
 not an absolute necessity for the system to function. Note that this does not
@@ -1445,15 +1451,15 @@ such as Internet of Things applications or per-unit micro-billing.
 It is possible construct a cryptographically provable ``Delivery Versus
 Payment'' contract, or pay-to-contract\cite{paytocontract}, as proof of
 payment. This proof can be established as knowledge of the input R from hash(R)
-as payment of a certain value. By embedding the contract between the buyer and
-seller that knowing R is proof of funds sent, the recipient of funds has no
-incentive to disclose R unless they have certainty that they will receive
-payment. When the funds eventually get pulled from the buyer by their
-counterparty in their micropayment channel, R is disclosed as part of that pull
-of funds. One can design paper legal documents that specify that knowledge or
-disclosure of R implies fulfillment of payment. The sender can arrange a
-cryptographically signed contract for knowledge of inputs for hashes as
-fulfillment of contracts before payment.
+as payment of a certain value. By embedding a clause into the contract between
+the buyer and seller stating that knowing R is proof of funds sent, the
+recipient of funds has no incentive to disclose R unless they have certainty
+that they will receive payment. When the funds eventually get pulled from the
+buyer by their counterparty in their micropayment channel, R is disclosed as
+part of that pull of funds. One can design paper legal documents that specify
+that knowledge or disclosure of R implies fulfillment of payment. The sender can
+then arrange a cryptographically signed contract with knowledge of inputs for
+hashes treated as fulfillment of the paper contract before payment occurs.
 
 \section{The Bitcoin Lightning Network}
 
@@ -1476,12 +1482,12 @@ adjudicated on the blockchain.
 
 The obligation to deliver funds to an end-recipient is achieved through a
 process of chained delegation. Each participant along the path assumes the
-obligation to deliver to a particular recipient. They pass on this obligation
-to the next participant in the path. The obligation of each subsequent
-participant along the path, defined in their respective HTLCs, has a shorter
-time to completion compared to the prior participant. This way each participant
-is sure that they will be able to claim funds when the obligation is sent along
-the path.
+obligation to deliver to a particular recipient. Each participant passes on this
+obligation to the next participant in the path. The obligation of each
+subsequent participant along the path, defined in their respective HTLCs, has a
+shorter time to completion compared to the prior participant. This way each
+participant is sure that they will be able to claim funds when the obligation is
+sent along the path.
 
 Bitcoin Transaction Scripting, a form of what some call an implementation of
 ``Smart Contracts''\cite{smartcontracts}, enables systems without trusted
@@ -1519,20 +1525,20 @@ broadcast to the blockchain when all parties are cooperative.
 \end{figure}
 
 Decrementing timelocks are used so that all parties along the path know that
-the disclosure of R will be able to pull funds, since they will at worst be
-pulling funds after the date whereby they must receive R. If Dave does not
-produce R within 1 day to Carol, then Carol will be able to close out the HTLC.
-If Dave broadcasts R after 1 day, then he will not be able to pull funds from
-Carol. Carol's responsibility to Bob occurs on day 2, so Carol will never be
-responsible for payment to Dave without an ability to pull funds from Bob
-provided that she updates her transaction with Dave to the blockchain or via
-novation.
+the disclosure of R will allow the disclosing party to pull funds, since they
+will at worst be pulling funds after the date whereby they must receive R. If
+Dave does not produce R within 1 day to Carol, then Carol will be able to close
+out the HTLC. If Dave broadcasts R after 1 day, then he will not be able to pull
+funds from Carol. Carol's responsibility to Bob occurs on day 2, so Carol will
+never be responsible for payment to Dave without an ability to pull funds from
+Bob provided that she updates her transaction with Dave via transmission to the
+blockchain or via novation.
 
 In the event that R gets disclosed to the participants halfway through expiry
 along the path (e.g. day 2), then it is possible for some parties along the
 path to be enriched. The sender will be able to know R, so due to Pay to
 Contract, the payment will have been fulfilled even though the receiver did not
-receive the funds. Therefore, the receiver will never disclose R unless they
+receive the funds. Therefore, the receiver must never disclose R unless they
 have received an HTLC from their channel counterparty; they are guaranteed to
 receive payment from one of their channel counterparties upon disclosure of the
 preimage.
@@ -1558,18 +1564,18 @@ conducting early settlement before the HTLC close.
 
 \subsection{Payment Amount}
 
-It is necessary to use a small payment per HTLC. One should not use an extremely
-high payment, in case the payment does not fully route to its destination. If
-the payment does not reach its destination and one of the participants along the
-path is uncooperative, it is possible that the sender must wait until the expiry
-before receiving a refund. Delivery may be lossy, similar to packets on the
-internet, but the network cannot outright steal funds in transit. Since
-transactions don't hit the blockchain with cooperative channel counterparties,
-it is recommended to use as small of a payment as possible. A tradeoff exists
-between locking up transaction fees on each hop versus the desire to use as
-small transaction amounts as possible (which the latter may incur higher total
-fees). Smaller transfers with more intermediaries imply a higher percentage paid
-as Lightning Network fees to the intermediaries.
+It is preferable to use a small payment per HTLC. One should not use an
+extremely high payment, in case the payment does not fully route to its
+destination. If the payment does not reach its destination and one of the
+participants along the path is uncooperative, it is possible that the sender
+must wait until the expiry before receiving a refund. Delivery may be lossy,
+similar to packets on the internet, but the network cannot outright steal funds
+in transit. Since transactions don't hit the blockchain with cooperative channel
+counterparties, it is recommended to use as small of a payment as possible. A
+tradeoff exists between locking up transaction fees on each hop versus the
+desire to use as small a transaction amount as possible (the latter of which may
+incur higher total fees). Smaller transfers with more intermediaries imply a
+higher percentage paid as Lightning Network fees to the intermediaries.
 
 \subsection{Clearing Failure and Rerouting}
 
@@ -1632,9 +1638,9 @@ possible that the one new participant replaces multiple hops.
 		collect some fee for offloading the channel between Bob and
 		Carol as well as between Carol and Dave. The channels between
 		Bob and Carol as well as Carol and Dave are undone and no
-		longer have the HTLC, nor has payment occurred on that path, it
-		will occur on the path involving Erin. This is achieved by
-		creating a new payment from Dave to Carol to Bob contingent
+		longer have the HTLC, nor has payment occurred on that path.
+		Payment will occur on the path involving Erin. This is achieved
+		by creating a new payment from Dave to Carol to Bob contingent
 		upon Erin constructing an HTLC. The payment in dashed lines
 		(red) are netted out to zero and settled via a new Commitment
 		Contract.
@@ -1648,7 +1654,7 @@ It is theoretically possible to build a route map implicitly from observing
 is not feasible with pay-to-script-hash transaction outputs, which can be
 resolved out-of-band from the bitcoin protocol via a third party routing
 service. Building a routing table will become necessary for large operators
-(e.g. BGP, CJBDNS). Eventually, with optimizations, the network will look a lot
+(e.g. BGP, Cjdns). Eventually, with optimizations, the network will look a lot
 like the correspondent banking network, or Tier-1 ISPs. Similar to how packets
 still reach their destination on your home network connection, not all
 participants need to have a full routing table. The core Tier-1 routes can be
@@ -1660,7 +1666,7 @@ routes to well-known nodes.
 
 \subsection{Fees}
 
-Lightning Network Fees, which differ from blockchain fees, are paid directly
+Lightning Network fees, which differ from blockchain fees, are paid directly
 between participants within the channel. The fees pay for the time-value of
 money for consuming the channel for a determined maximum period of time, and
 for counterparty risk of non-communication.
@@ -1669,8 +1675,8 @@ Counterparty risk for fees only exist with one's direct channel counterparty.
 If a node two hops away decides to disconnect and their transaction gets
 broadcast on the blockchain, one's direct counterparties should not broadcast
 on the blockchain, but continue to update via novation with a new Commitment
-Transaction. See the HTLC section on fees for more information about
-counterparty risk.
+Transaction. See the Decrementing Timelocks entry in the HTLC section for more
+information about counterparty risk.
 
 The time-value of fees pays for consuming time (e.g. 3 days) and is
 conceptually equivalent to a gold lease rate without custodial risk; it is the
@@ -1684,18 +1690,18 @@ profitable paths.
 The primary risks relate to timelock expiration. Additionally, for core nodes
 and possibly some merchants to be able to route funds, the keys must be held
 online for lower latency. However, end-users and nodes are able to keep their 
-their private keys firewalled off in cold storage.
+private keys firewalled off in cold storage.
 
 \subsection{Improper Timelocks}
 
-Participants must choose timelocks with sufficient amount of time. If
-insufficient time is given, it is possible that transactions believed to be
-invalid will become valid, enabling coin theft by the counterparty. There is a
-trade-off between longer timelocks and the time value of money. When writing
-wallet and Lightning Network application software, it is necessary to ensure
-that sufficient time is given and users are able to have their transactions
-enter into the blockchain when interacting with non-cooperative or malicious
-channel counterparties.
+Participants must choose timelocks with sufficient amounts of time. If
+insufficient time is given, it is possible that timelocked transactions believed
+to be invalid will become valid, enabling coin theft by the counterparty. There
+is a trade-off between longer timelocks and the time-value of money. When
+writing wallet and Lightning Network application software, it is necessary to
+ensure that sufficient time is given and users are able to have their
+transactions enter into the blockchain when interacting with non-cooperative or
+malicious channel counterparties.
 
 \subsection{Forced Expiration Spam}
 
@@ -1709,7 +1715,7 @@ other locktimed transactions become valid.
 This may be mitigated by permitting one transaction replacement on all pending
 transactions. Anti-spam can be used by permitting only one transaction
 replacement of a higher sequence number by the inverse of an even or odd number.
-For example, if an odd sequence number was broadcasted, permit a replacement to
+For example, if an odd sequence number was broadcast, permit a replacement to
 a higher even number only once. Transactions would use the sequence number in an
 orderly way to replace other transactions. This mitigates the risk assuming
 honest miners. This attack is extremely high risk, as incorrect broadcast of
@@ -1736,21 +1742,21 @@ occur.
 \subsection{Coin Theft via Cracking}
 
 As parties must be online and using private keys to sign, there is a
-possibility that if one's computer is compromised, that coins will be stolen by
-the counterparty. While there may be methods to mitigate the threat for the
-sender and the receiver, the intermediary nodes must be online and will likely
-be processing the transaction automatically. For this reason, the intermediary
-nodes will be at risk and should not be holding a substantial amount of money
-in this ``hot wallet.'' Intermediary nodes which have better security will
-likely be able to out-compete others in the long run and be able to conduct
-greater transaction volume due to lower fees. Historically, one of the largest
-component of fees and interest in the financial system are from various forms of
-counterparty risk -- in Bitcoin it is possible that the largest component in
-fees will be derived from security risk premiums.
+possibility that, if the computer where the private keys are stored is
+compromised, coins will be stolen by the attacker. While there may be methods to
+mitigate the threat for the sender and the receiver, the intermediary nodes must
+be online and will likely be processing the transaction automatically. For this
+reason, the intermediary nodes will be at risk and should not be holding a
+substantial amount of money in this ``hot wallet.'' Intermediary nodes which
+have better security will likely be able to out-compete others in the long run
+and be able to conduct greater transaction volume due to lower fees.
+Historically, one of the largest component of fees and interest in the financial
+system are from various forms of counterparty risk -- in Bitcoin it is possible
+that the largest component in fees will be derived from security risk premiums.
 
 A Funding Transaction may have multiple outputs with multiple Commitment
-Transactions, with the Funding Transaction and some Commitment Transactions
-stored offline. It is possible to create an equivalent of a ``Checking
+Transactions, with the Funding Transaction key and some Commitment Transactions
+keys stored offline. It is possible to create an equivalent of a ``Checking
 Account'' and ``Savings Account'' by moving funds between outputs from a
 Funding Transaction, with the ``Savings Account'' stored offline and requiring
 additional signatures from security services.
@@ -1769,8 +1775,8 @@ of honesty.
 If one does not broadcast a transaction at the correct time, the counterparty
 may steal funds. This can be mitigated by having a designated third party to send
 funds. An output fee can be added to create an incentive for this third party to
-watch the network. Further, this can also be mitigated by implementing relative
-OP\_CHECKLOCKTIMEVERIFY.
+watch the network. Further, this can also be mitigated by implementing
+OP\_CHECKSEQUENCEVERIFY.
 
 \subsection{Inability to Make Necessary Soft-Forks}
 
@@ -1803,24 +1809,24 @@ money by losing the fee to the miner, as well as losing all their money in the
 channel. This attack is unlikely and fairly unattractive as it is far too
 difficult and requires a high degree of collusion with extreme risk.
 
-The risk model of this occuring is similar to that of miners colluding to do reorg
-attacks, exremely unlikely with many uncoordinated miners.
+The risk model of this attack occurirng is similar to that of miners colluding
+to do reorg attacks: Extremely unlikely with many uncoordinated miners.
 
 \section{Block Size Increases and Consensus}
 
-If we presume that a decentralized payment network exists and one person will
-make 3 blockchain transactions per year on average, Bitcoin will be able to
-support over 35 million users with 1MB blocks in ideal circumstances (assuming
-2000 transactions per MB). This is quite limited, and an increase of the block
-size may be necessary to support everyone in the world using Bitcoin. A simple
-increase of the block size would be a hard fork, meaning all nodes will need to
-update their wallets if they wish to participate in the network with the larger
-blocks.
+If we presume that a decentralized payment network exists and one user will make
+3 blockchain transactions per year on average, Bitcoin will be able to support
+over 35 million users with 1MB blocks in ideal circumstances (assuming 2000
+transactions/MB, or 500 bytes/Tx). This is quite limited, and an increase of the
+block size may be necessary to support everyone in the world using Bitcoin. A
+simple increase of the block size would be a hard fork, meaning all nodes will
+need to update their wallets if they wish to participate in the network with the
+larger blocks.
 
 While it may appear as though this system will mitigate the block size increases
 in the short term, if it achieves global scale, it will necessitate a block size
-increase in the long term. Creating a credible threat that spamming the
-blockchain to encourage transactions to timeout becomes imperative.
+increase in the long term. Creating a credible tool to help prevent blockchain
+spam designed to encourage transactions to timeout becomes imperative.
 
 To mitigate timelock spam vulnerabilities, non-miner and miners' consensus rules
 may also differ if the miners' consensus rules are more restrictive. Non-miners
@@ -1830,7 +1836,7 @@ block by other miners, but not by non-miners. The miners will only build the
 chain on blocks which are valid according to the agreed-upon soft-cap. This
 permits miners to agree on raising the block size limit without requiring
 frequent hard-forks from clients, so long as the amount raised by miners does
-not go over the clients' hard limit. This mitigates the risk of mass-expiry of
+not go over the clients' hard limit. This mitigates the risk of mass expiry of
 transactions at once. All transactions which are not redeemed via Exercise
 Settlement (ES) may have a very high fee attached, and miners may use a
 consensus rule whereby those transactions are exempted from the soft-cap, making
@@ -1915,7 +1921,7 @@ blockchain.
 
 \section{Acknowledgements}
 
-Micropayment channels have been developed by many parties, and have been
+Micropayment channels have been developed by many parties, and has been
 discussed on bitcointalk, the bitcoin mailing list, and IRC. The amount of
 contributors to this idea are immense and much thought have been put into this
 ability. Effort has been placed into citing and finding similar ideas, however
@@ -1948,26 +1954,23 @@ Older clients would still work, but miners would need to update. Bitcoin has had
 several soft forks in the past, including pay-to-script-hash (P2SH).
 
 To mitigate malleability, it requires changing which contents are signed by the
-participants. This is achieved by creating new Sighash types. In order to
+participants. This is achieved by creating new sighash types. In order to
 accommodate this new behavior, a new P2SH type or new OP\_CHECKSIG is necessary
 to make it a soft-fork rather than a hard-fork. 
 
-Either may be used, if a new P2SH was defined, it would use a different output
-script such as:
+If a new P2SH was defined, it would use a different output script such as:
 \\\\
 \noindent\texttt{OP\_DUP OP\_HASH160 \textless 20-byte hash\textgreater
 ~OP\_EQUALVERIFY}
 \\\\
+
 Since this will always resolve to true provided a valid redeemScript, all
-existing clients will return true. 
+existing clients will return true. This allows the scripting system to construct
+new rules, including new signature validation rules. At least one new sighash
+would need to exist.
 
-This opens the scripting system to construct new rules, including new signature
-validation rules. At least one new sighash would need to exist.
-
-A SIGHASH\_NOINPUT, will not sign any input transactions IDs nor sign the
-index. 
-
-By using SIGHASH\_NOINPUT, it allows one to be assured that one's counterparty
+SIGHASH\_NOINPUT would neither sign any input transactions IDs nor sign the
+index. By using SIGHASH\_NOINPUT, one can be assured that one's counterparty
 cannot invalidate entire trees of chained transactions of potential contract
 states which were previously agreed upon, using transaction ID mutation. With
 the new sighash flags, it is possible to spend from a parent transaction even
@@ -1979,37 +1982,37 @@ with any transaction in which the sigScript returns as valid, so multiple
 transactions with the same outputs are redeemable (provided the output values
 are less).
 
-Further, and just as importantly, it permits participants to sign spends of
-transactions without knowing the signatures of the transaction being spent. By
-solving malleability in the above manner, two parties may build contracts and
-spending on transactions without either party having the ability to broadcast
-that original transaction on the blockchain until both parties agree. With the
-new sighash types, participants may build potential contract states and
+Further, and just as importantly, SIGHASH\_NOINPUT permits participants to sign
+spends of transactions without knowing the signatures of the transaction being
+spent. By solving malleability in the above manner, two parties may build
+contracts and spend transactions without either party having the ability to
+broadcast that original transaction on the blockchain until both parties agree.
+With the new sighash type, participants may build potential contract states and
 potential payout conditions and agree upon all terms, before the contract may be
 paid, broadcast, and executed upon without the need for a trusted third party.
 
 Without SIGHASH\_NOINPUT, one cannot build outputs before the transaction can be
 funded. It is as if one cannot make any agreements without committing funds
 without knowing what one is committing to. SIGHASH\_NOINPUT allows one to build
-redemption for transactions which do not yet exist; in other words one can form
+redemption for transactions which do not yet exist. In other words, one can form
 agreements before funding the transaction if the output is a 2-of-2
 multisignature transaction.
 
 To use SIGHASH\_NOINPUT, one builds a Funding Transaction, and does not yet sign
 it. This Funding Transaction does not need to use SIGHASH\_NOINPUT if it is
-spending from a transaction which already entered into the blockchain. To spend
-from a Funding Transaction with a 2-of-2 multisignature output which is not yet
-signed and broadcast, however, requires using SIGHASH\_NOINPUT.
+spending from a transaction which has already been entered into the blockchain.
+To spend from a Funding Transaction with a 2-of-2 multisignature output which
+has not yet been signed and broadcast, however, requires using SIGHASH\_NOINPUT.
 
 A further stop-gap solution using OP\_CHECKSEQUENCEVERIFY or a less-optimal use
-of OP\_CHECKLOCKTIMEVERIFY will be described in a future paper by Rusty Foster.
+of OP\_CHECKLOCKTIMEVERIFY will be described in a future paper by Rusty Russell.
 An updated version of this paper will also include these constructions.
 
 \end{appendices}
 
 %bibliography
 \bibliographystyle{unsrt}
-\bibliography{new}
+\bibliography{paper}
 
 \end{document}
 
