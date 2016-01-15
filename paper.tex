@@ -33,7 +33,7 @@
 		\small\href{mailto:rx@awsomnet.org}
 			{\nolinkurl{rx@awsomnet.org}}
 	}
-\date{\today\\\small DRAFT Version 0.5.9}
+\date{\today\\\small DRAFT Version 0.5.9.2}
 \begin{document}
 
 \maketitle
@@ -1887,6 +1887,19 @@ the Lightning Network:
 		computation. By moving the overwhelming majority of trustless
 		transactions off-chain, it is possible to have highly complex
 		transaction contract terms without ever hitting the blockchain.
+
+	\item Cross-Chain Payments. So long as there are similar hash-functions
+		across chains, it's possible for transactions to be routed over
+		multiple chains with different consensus rules. The sender does
+		not have to trust or even know about the other chains -- even
+		the destination chain. Simiarly, the receiver does not have to
+		know anything about the sender's chain or any other chain. All
+		the receiver cares about is a conditional payment upon
+		knowledge of a secret on their chain. Payment can be routed by
+		participants in both chains in the hop. E.g. Alice is on
+		Bitcoin, Bob is on both Bitcoin and X-Coin and Carol is on
+		a hypothetical X-Coin, Alice can pay Carol without
+		understanding the X-Coin consensus rules.
 
 \end{itemize}
 
