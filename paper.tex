@@ -117,7 +117,7 @@ even better if the bitcoin network supported a near-unlimited number of
 transactions per second with extremely low fees for micropayments. Many
 micropayments can be sent sequentially between two parties to enable any size
 of payments. Micropayments would enable unbundling, less trust and
-commodification of services, such as payments for per-megabyte internet
+commodification of services, such as payments for per-megabyte Internet
 service. To be able to achieve these micropayment use cases, however, would
 require severely reducing the amount of transactions that end up being
 broadcast on the global Bitcoin blockchain.
@@ -241,13 +241,13 @@ of micropayment channels.
 If we presume a large network of channels on the Bitcoin blockchain, and all
 Bitcoin users are participating on this graph by having at least one channel
 open on the Bitcoin blockchain, it is possible to create a near-infinite amount
-of transactions inside this network. The only transactions that are broadcasted
+of transactions inside this network. The only transactions that are broadcast
 on the Bitcoin blockchain prematurely are with uncooperative channel
 counterparties.
 
 %TODO: define hashlock and timelock
 By encumbering the Bitcoin transaction outputs with a hashlock and timelock,
-the channel counterparty will be unable to outright steal funds and Bitcoins
+the channel counterparty will be unable to outright steal funds and bitcoins
 can be exchanged without outright counterparty theft. Further, by using
 staggered timeouts, it's possible to send funds via multiple intermediaries in a
 network without the risk of intermediary theft of funds.
@@ -500,7 +500,7 @@ to determine validation paths.
 
 \subsection{Sequence Number Maturity}
 
-Mark Freidenbach has proposed that Sequence Numbers can be enforcible via a
+Mark Friedenbach has proposed that Sequence Numbers can be enforcible via a
 relative block maturity of the parent transaction via a
 soft-fork\cite{seqnum}. This would allow some basic ability to ensure some form
 of relative block confirmation time lock on the spending script. In addition, an
@@ -1077,7 +1077,7 @@ of $R$ by the recipient within a certain timeframe. After this timeframe, the
 funds are refunded back to the sender.
 
 Similar to RSMCs, these contract terms are programatically enforced on the
-Bitoin blockchain and do not require trust in the counterparty to adhere to the
+Bitcoin blockchain and do not require trust in the counterparty to adhere to the
 contract terms, as all violations are penalized via unilaterally enforced
 fidelity bonds, which are constructed using penalty transactions spending from
 commitment states. If Bob knows $R$ within three days, then he can redeem the
@@ -1131,7 +1131,7 @@ It is within both parties individual responsibility to ensure that they can get
 their transaction into the blockchain in order to ensure the balances are
 correct. For Bob, in order to receive the funds, he must either broadcast the
 ``Delivery'' transaction on the Bitcoin blockchain, or otherwise settle with
-Alice (while cancelling the HTLC). For Alice, she must broadcast the ``Timeout''
+Alice (while canceling the HTLC). For Alice, she must broadcast the ``Timeout''
 3 days from now to receive the refund, or cancel the HTLC entirely with Bob.
 
 Yet this kind of simplistic construction has similar problems as an incorrect
@@ -1569,10 +1569,10 @@ extremely high payment, in case the payment does not fully route to its
 destination. If the payment does not reach its destination and one of the
 participants along the path is uncooperative, it is possible that the sender
 must wait until the expiry before receiving a refund. Delivery may be lossy,
-similar to packets on the internet, but the network cannot outright steal funds
+similar to packets on the Internet, but the network cannot outright steal funds
 in transit. Since transactions don't hit the blockchain with cooperative channel
 counterparties, it is recommended to use as small of a payment as possible. A
-tradeoff exists between locking up transaction fees on each hop versus the
+trade off exists between locking up transaction fees on each hop versus the
 desire to use as small a transaction amount as possible (the latter of which may
 incur higher total fees). Smaller transfers with more intermediaries imply a
 higher percentage paid as Lightning Network fees to the intermediaries.
@@ -1594,7 +1594,7 @@ Commitment Transaction.
 	}
 	\caption{Dave creates a path back to Alice after Alice fails to send
 		funds to Dave, because Carol is uncooperative. The input R from
-		hash(R) is never brodcast by Dave, because Carol did not
+		hash(R) is never broadcast by Dave, because Carol did not
 		complete her actions. If R was broadcast, Alice will
 		break-even. Dave, who controls R should never broadcast R
 		because he may not receive funds from Carol, he should let the
@@ -1710,7 +1710,7 @@ using the Lightning Network. If a malicious participant creates many channels
 and forces them all to expire at once, these may overwhelm block data capacity,
 forcing expiration and broadcast to the blockchain. The result would be mass
 spam on the bitcoin network. The spam may delay transactions to the point where
-other locktimed transactions become valid.
+other timelocked transactions become valid.
 
 This may be mitigated by permitting one transaction replacement on all pending
 transactions. Anti-spam can be used by permitting only one transaction
@@ -1809,7 +1809,7 @@ money by losing the fee to the miner, as well as losing all their money in the
 channel. This attack is unlikely and fairly unattractive as it is far too
 difficult and requires a high degree of collusion with extreme risk.
 
-The risk model of this attack occurirng is similar to that of miners colluding
+The risk model of this attack occurring is similar to that of miners colluding
 to do reorg attacks: Extremely unlikely with many uncoordinated miners.
 
 \section{Block Size Increases and Consensus}
@@ -1879,7 +1879,7 @@ the Lightning Network:
 		micropayments, especially with the smallest of values. With this
 		system, near-instant micropayments using Bitcoin without a 3rd
 		party custodian would be possible. It would enable, for example,
-		paying per-megabyte for internet service or per-article to read
+		paying per-megabyte for Internet service or per-article to read
 		a newspaper.
 	
 	\item Financial Smart Contracts and Escrow. Financial contracts are
@@ -1892,7 +1892,7 @@ the Lightning Network:
 		across chains, it's possible for transactions to be routed over
 		multiple chains with different consensus rules. The sender does
 		not have to trust or even know about the other chains -- even
-		the destination chain. Simiarly, the receiver does not have to
+		the destination chain. Similarly, the receiver does not have to
 		know anything about the sender's chain or any other chain. All
 		the receiver cares about is a conditional payment upon
 		knowledge of a secret on their chain. Payment can be routed by
@@ -1932,7 +1932,7 @@ conducted securely off-chain using bitcoin scripting, with enforcement of
 non-cooperation by broadcasting signed multisignature transactions on the
 blockchain.
 
-\section{Acknowledgements}
+\section{Acknowledgments}
 
 Micropayment channels have been developed by many parties, and has been
 discussed on bitcointalk, the bitcoin mailing list, and IRC. The amount of
