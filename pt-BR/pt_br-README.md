@@ -27,7 +27,7 @@ cd figures
 python dia2pdf.py
 ```
 
-## Formatando
+## Formatação
 
 O formato padrao são de 80 characteres ao menos que exista um explícito
 prencisando de algo maior.
@@ -48,5 +48,5 @@ para reditar um paragrafo inteiro, é assim:
 <ESC>gq}
 ```
 
-Há alguns lugares onde o refluxo pode se quebrado (primarily in figures
-where it's sensitive to linebreaks).
+Há alguns lugares onde o refluxo pode se quebrado (principalmente em figuras
+onde é sensível a quebras de linha).
