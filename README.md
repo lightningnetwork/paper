@@ -27,7 +27,6 @@ DRAFT  Version 0.5.9.2
 
 # [概述](docs/abstract.md)
 
+# [1. 比特币区块链的可扩展性问题](docs/chapter1.md)
 
-
-# [比特币区块链的可扩展性问题](docs/chapter1.md)
-
+# [2. 微支付通道网络可以解决扩展性问题](docs/chapter2.md)
