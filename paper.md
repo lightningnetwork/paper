@@ -40,5 +40,5 @@ The payment network Visa achieved 47,000 peak transactions per sec- ond (tps) on
 
 Clearly, achieving Visa-like capacity on the Bitcoin network isn’t fea- sible today. No home computer in the world can operate with that kind of bandwidth and storage. If Bitcoin is to replace all electronic payments in the future, and not just Visa, it would result in outright collapse of the Bit- coin network, or at best, extreme centralization of Bitcoin nodes and miners to the only ones who could afford it. This centralization would then defeat aspects of network decentralization that make Bitcoin secure, as the abil- ity for entities to validate the chain is what allows Bitcoin to ensure ledger accuracy and security.
 
-> 显然，今天在比特币网络上实现类似Visa的处理能力是不可能的。世界上还没有哪台家用电脑有这样的带宽和存储条件。如果比特币在未来要取代所有的电子支付系统，而不仅仅是取代Visa，那将会导致比特币网络的彻底崩溃，，或者在最好的情况下，只有可以支付得起运行这些节点成本的比特币节点和矿工可以使用。这种集中会打破网络的去中心化，将使比特币失去确保总账的准确性和安全性的能力。
+> 显然，今天在比特币网络上实现类似Visa的处理能力是不可能的。世界上还没有哪台家用电脑有这样的带宽和存储条件。如果比特币在未来要取代所有的电子支付系统，而不仅仅是取代Visa，那将会导致比特币网络的彻底崩溃，或者在最好的情况下，只有可以支付得起运行这些节点成本的比特币节点和矿工可以使用。这种集中会打破网络的去中心化，将使比特币失去确保总账的准确性和安全性的能力。
 
