@@ -30,4 +30,4 @@ To achieve much higher than 47,000 transactions per second using Bitcoin require
 
 While it is possible to scale at a small level, it is absolutely not possible to handle a large amount of micropayments on the network or to encompass all global transactions. For bitcoin to succeed, it requires confidence that if it were to become extremely popular, its current advantages stemming from decentralization will continue to exist. In order for people today to believe that Bitcoin will work tomorrow, Bitcoin needs to resolve the issue of block size centralization effects; large blocks implicitly create trusted custodians and significantly higher fees.
 
-> 虽然可以小规模的扩展，但是要在网络上处理海量的微支付或者涵盖全球的交易，这是不可能的。要想让比特币成功，它需要人们对它有这样的信心：如果它将来广泛应用，那么它目前的去中心化的优势也会继续存在。为了让今天的人们相信比特币的明天回事美好的，比特币需要解决区块太大所导致的集中化问题；大区块会带来集中化的托管人，并大幅提高了手续费用。
+> 虽然可以小规模的扩展，但是要在网络上处理海量的微支付或者涵盖全球的交易，这是不可能的。要想让比特币成功，它需要人们对它有这样的信心：如果它将来广泛应用，那么它目前的去中心化的优势也会继续存在。为了让今天的人们相信比特币的明天是美好的，比特币需要解决区块太大所导致的集中化问题；大区块会带来集中化的托管人，并大幅提高了手续费用。
