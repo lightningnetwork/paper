@@ -48,11 +48,17 @@ Without SIGHASH NOINPUT, it is not possible to generate a spend from a transacti
 > 如果没有SIGHASH NOINPUT，就无法在不交换签名的情况下生成花费它的交易，因为要花费保证金交易的输出，就需要交易ID作为花费交易输入的一部分。交易ID的一个组成部分是它的父交易方(即保证金交易)的签名，因此双方需要在创建子交易之前交换父交易的签名。由于一方或双方都需要夫交易的签名才能花费它，这就意味着一方或双方都能在子交易存在之前就能广播父交易(保证金交易)。SIGHASH NOINPUT允许子交易在不签署交易输入的情况下花费它，从而解决了这个问题。使用SIGHASH NOINPUT，操作顺序为：
 
 1.Create the parent (Funding Transaction)
+
 2.Create the children (Commitment Transactions and all spends from the commitment transactions)
+
 3.Sign the children
+
 4.Exchange the signatures for the children
+
 5.Sign the parent
+
 6.Exchange the signatures for the parent 
+
 7.Broadcast the parent on the blockchain
 
 > 1.创建父交易(保证金交易)
