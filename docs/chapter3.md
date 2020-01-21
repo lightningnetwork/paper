@@ -30,4 +30,39 @@ An initial channel Funding Transaction is created whereby one or both chan- nel 
 The output for this Funding Transaction is a single 2-of-2 multisigna-
 ture script with both participants in this channel, henceforth named Alice and Bob. Both participants do not exchange signatures for the Funding Transaction until they have created spends from this 2-of-2 output refund- ing the original amount back to its respective funders. The purpose of not signing the transaction allows for one to spend from a transaction which does not yet exist. If Alice and Bob exchange the signatures from the Fund- ing Transaction without being able to broadcast spends from the Funding Transaction, the funds may be locked up forever if Alice and Bob do not cooperate (or other coin loss may occur through hostage scenarios whereby one pays for the cooperation from the counterparty).
 
-> 这笔交易的输出是一个2/2多重签名地址，需要这个通道的双方参与者都同意才能花费这笔输出。我们按照惯例将通道两端的参与者命名为Alice和Bob。此时双方还不会为保证金交易交换签名，要先
+> 这笔交易的输出是一个2/2多重签名地址，需要这个通道的双方参与者都同意才能花费这笔输出。我们按照惯例将通道两端的参与者命名为Alice和Bob。此时双方还不会为保证金交易交换签名，他们要先创建两笔花费，能够从保证金交易中将原始金额返还双方。不签署交易的目的是允许人们消费一个还不存在的交易。如果Alice和Bob在交换其签名之前广播保证金交易，此时一方不合作的话，这笔钱就可能被永久锁定(或者由一方承担了合作失败的损失)。
+
+Alice and Bob both exchange inputs to fund the Funding Transaction(to know which inputs are used to determine the total value of the channel), and exchange one key to use to sign with later. This key is used for the 2-of-2 output for the Funding Transaction; both signatures are needed to spend from the Funding Transaction, in other words, both Alice and Bob need to agree to spend from the Funding Transaction.
+
+> Alice和Bob互相交换保证金交易的输入(为了确定哪些输入用于确定通道的总容量)，然后交换一个密钥以供以后签名使用。这个密钥用于消费2/2保证金交易的输出，换句话说，如果要花费这笔保证金，需要Alice和Bob双方都同意。
+
+#### 3.1.2 Spending from an Unsigned Transaction
+#### 3.1.2 消费一笔未签名的交易
+
+The Lightning Network uses a SIGHASH NOINPUT  transaction  to  spend from this 2-of-2 Funding Transaction output, as it is necessary to spend from a transaction for which the signatures are not yet exchanged. SIGHASH NOINPUT, implemented using a soft-fork, ensures transactions can be spent from before it is signed by all parties, as transactions would need to be signed to get a transaction ID without new sighash flags. Without SIGHASH NOINPUT, Bitcoin transactions cannot be spent from before they may be broadcast —it’s as if one could not draft a contract without paying the other party first. SIGHASH NOINPUT resolves this problem. See Appendix A for more information and implementation.
+
+> 闪电网络使用 SIGHASH NOINPUT类型的交易来花费2/2保证金交易的输出，因为必须要构建一笔交易用于花费尚未交换签名的交易输出。SIGHASH NOINPUT将使用软分叉实现，它确保了交易可以在双方签署之前就能构造花费的交易，如果没有这个操作符的话，那交易就必须通过签署才能构造交易ID，那样就不能在广播这笔交易之前先来构造消费它的交易--这就好像一个人不先付款给另一方就不能起草合同一样。SIGHASH NOINPUT解决了这个问题，有关这方面更多信息和实现，亲参考附录A。
+
+Without SIGHASH NOINPUT, it is not possible to generate a spend from a transaction without exchanging signatures, since spending the Fund- ing Transaction requires a transaction ID as part of the signature in the child’s input. A component of the Transaction ID is the parent’s (Funding Transaction’s) signature, so both parties need to exchange their signatures of the parent transaction before the child can be spent. Since one or both par- ties must know the parent’s signatures to spend from it, that means one or both parties are able to broadcast the parent (Funding Transaction) before the child even exists. SIGHASH NOINPUT gets around this by permitting the child to spend without signing the input. With SIGHASH NOINPUT, the order of operations are to:
+
+> 如果没有SIGHASH NOINPUT，就无法在不交换签名的情况下生成花费它的交易，因为要花费保证金交易的输出，就需要交易ID作为花费交易输入的一部分。交易ID的一个组成部分是它的父交易方(即保证金交易)的签名，因此双方需要在创建子交易之前交换父交易的签名。由于一方或双方都需要夫交易的签名才能花费它，这就意味着一方或双方都能在子交易存在之前就能广播父交易(保证金交易)。SIGHASH NOINPUT允许子交易在不签署交易输入的情况下花费它，从而解决了这个问题。使用SIGHASH NOINPUT，操作顺序为：
+
+1.Create the parent (Funding Transaction)
+2.Create the children (Commitment Transactions and all spends from the commitment transactions)
+3.Sign the children
+4.Exchange the signatures for the children
+5.Sign the parent
+6.Exchange the signatures for the parent 
+7.Broadcast the parent on the blockchain
+
+> 1.创建父交易(保证金交易)
+> 2.创建子交易(承诺交易以及所有相关的承诺交易的花费)
+> 3.为子交易签名
+> 4.双方交换子交易的签名
+> 5.为父交易签名
+> 6.双方交换父交易的签名
+> 7.在区块链上广播父交易
+
+One is not able to broadcast the parent (Step 7) until Step 6 is com- plete. Both parties have not given their signature to spend from the Funding Transaction until step 6. Further, if one party fails during Step 6, the parent can either be spent to become the parent transaction or the inputs to the parent transaction can be double-spent (so that this entire transaction path is invalidated).
+
+> 在第6步完成之前，不能广播父交易(步骤7)。在第6步之前，双方都没有签名同意花费保证金交易。此外，如果在第6步中，有一方作弊，即父交易被花费了，或者父交易的输入被双重支付，整个交易路径就都被认为是无效的。
