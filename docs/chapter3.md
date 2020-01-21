@@ -56,11 +56,17 @@ Without SIGHASH NOINPUT, it is not possible to generate a spend from a transacti
 7.Broadcast the parent on the blockchain
 
 > 1.创建父交易(保证金交易)
+
 > 2.创建子交易(承诺交易以及所有相关的承诺交易的花费)
+
 > 3.为子交易签名
+
 > 4.双方交换子交易的签名
+
 > 5.为父交易签名
+
 > 6.双方交换父交易的签名
+
 > 7.在区块链上广播父交易
 
 One is not able to broadcast the parent (Step 7) until Step 6 is com- plete. Both parties have not given their signature to spend from the Funding Transaction until step 6. Further, if one party fails during Step 6, the parent can either be spent to become the parent transaction or the inputs to the parent transaction can be double-spent (so that this entire transaction path is invalidated).
