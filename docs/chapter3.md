@@ -57,7 +57,7 @@ Without SIGHASH NOINPUT, it is not possible to generate a spend from a transacti
 
 5.Sign the parent
 
-6.Exchange the signatures for the parent 
+6.Exchange the signatures for the parent
 
 7.Broadcast the parent on the blockchain
 
@@ -78,3 +78,65 @@ Without SIGHASH NOINPUT, it is not possible to generate a spend from a transacti
 One is not able to broadcast the parent (Step 7) until Step 6 is com- plete. Both parties have not given their signature to spend from the Funding Transaction until step 6. Further, if one party fails during Step 6, the parent can either be spent to become the parent transaction or the inputs to the parent transaction can be double-spent (so that this entire transaction path is invalidated).
 
 > 在第6步完成之前，不能广播父交易(步骤7)。在第6步之前，双方都没有签名同意花费保证金交易。此外，如果在第6步中，有一方作弊，即父交易被花费了，或者父交易的输入被双重支付，整个交易路径就都被认为是无效的。
+
+#### 3.1.3 Commitment  Transactions:  Unenforcible Construction
+#### 3.1.3 承诺交易: 不能强制履行
+
+After the unsigned (and unbroadcasted) Funding Transaction has been cre- ated, both parties sign and exchange an initial Commitment Transaction. These Commitment Transactions spends from the 2-of-2 output of the Fund- ing Transaction (parent). However, only the Funding Transaction is broad- cast on the blockchain.
+
+> 当还没有签名(且没有广播)的保证金交易创建完成之后，双方将签署并交换初始承诺交易。这些承诺交易花费的是2/2保证金交易的输出。值得注意的是，只有保证金交易才会广播上链。
+
+Since the Funding Transaction has already entered into the blockchain, and the output is a 2-of-2 multisignature transaction which requires the agreement of both parties to spend from, Commitment Trans- actions are used to express the present balance. If only one 2-of-2 signed Commitment Transaction is exchanged between both parties, then both parties will be sure that they are able to get their money back after the Funding Transaction enters the blockchain. Both parties do not broadcast the Commitment Transactions onto the blockchain until they want to close out the current balance in the channel. They do so by broadcasting the present Commitment Transaction.
+
+> 由于保证金交易已经广播入链，并且输出是一个2/2多重签名交易，这需要双方均同意才能花费，因此可以采用承诺交易来确认当前状态下双方的余额。如果双方之间只交换一笔2/2签名的承诺交易，而通过这笔交易，双方能确保在保证金交易广播入链后仍然能够取回资金。那么双方就不需要将承诺交易广播入链，除非他们希望关闭通道并结算余额。也只有这时候才需要广播承诺交易。
+
+Commitment Transactions pay out the respective current balances to each party. A naive (broken) implementation would construct an unbroad- casted transaction whereby there is a 2-of-2 spend from a single transaction which have two outputs that return all current balances to both channel counterparties. This will return all funds to the original party when creat- ing an initial Commitment Transaction.
+
+> 承诺交易会向每一方支付各自的流动余额。一个简单(不完整)的方法就是构建一笔交易，该交易花费2/2多重签名保证金交易的输入，有两个输出，就是将当前通道的余额返回给通道双方。通过创建这笔初始承诺交易，将会把通道资金的原始余额返回给双方。
+
+Figure 1: A naive broken funding transaction is described in this diagram. The Funding Transaction (F), designated in green, is broadcast on the blockchain after all other trans- actions are signed. All other transactions spending from the funding transactions are not yet broadcast, in case the counterparties wish to update their balance. Only the Funding Transaction is broadcast on the blockchain at this time.
+
+> 图一：图1描述了一个简单的分配保证金交易的方法。绿色的部分代表保证金交易(F)，当其他交易都签署之后才在区块链上广播，以防交易对手更新他们的通道余额。此场景中只有保证金交易才会被广播。
+
+For instance, if Alice and Bob agree to create a Funding Transac- tion with a single 2-of-2 output worth 1.0 BTC (with 0.5 BTC contribution from each), they create a Commitment Transaction where there are two 0.5 BTC outputs for Alice and Bob. The Commitment Transactions are signed first and keys are exchanged so either is able to broadcast the Commitment Transaction at any time contingent upon the Funding Transaction enter- ing into the blockchain. At this point, the Funding Transaction signatures can safely be exchanged, as either party is able to redeem their funds by broadcasting the Commitment Transaction.
+
+> 例如，如果Alice和Bob同意创建一笔包含1.0BTC(每一方存入0.5BTC)的2/2多重签名保证金交易，他们就需要创建一笔承诺交易，保证返还给Alice和Bob各自0.5BTC。双方首先对这笔承诺交易交换签名，这样在保证金交易广播入链后，任何一方都可以在任何时候广播这笔承诺交易。此时，可以放心的签署保证金交易，因为任何一方都可以通过广播承诺交易来赎回资金。
+
+This construction breaks, however, when one wishes to update the present balance. In order to update the balance, they must update their Commitment Transaction output values (the Funding Transaction has al- ready entered into the blockchain and cannot be changed).
+
+> 然而，当一方想要改变其当前通道内的余额时，这种结构就被打破了。为了更新余额，他们就必须更新他们的承诺交易的输出值(而保证金交易已经广播入链，不能更改了)。
+
+When both parties agree to a new Commitment Transaction and ex- change signatures for the new Commitment Transaction, either Commit- ment Transactions can be broadcast. As the output from the Funding Transaction can only be redeemed once, only one of those transactions will be valid. For instance, if Alice and Bob agree that the balance of the channel
+is now 0.4 to Alice and 0.6 to Bob, and a new Commitment Transaction is created to reflect that, either Commitment Transaction can be broadcast. In effect, one would be unable to restrict which Commitment Transaction is broadcast, since both parties have signed and exchanged the signatures for either balance to be broadcast.
+
+> 当双方都同意新的承诺交易并为其交换签名的时候，任一提交的交易都可以被广播。由于保证金交易的输出只能花费一次，因此这些交易中只有一个是有效的。例如，如果Alice和Bob同意当前支付通道的余额分配是Alice拥有0.4BTC，Bob拥有0.6BTC，就需要创建一笔新的承诺交易来反映当前情况。此时之前的承诺交易也有可能被广播。实际上，当前无法限制广播哪个承诺交易，因为双方都已经交换的签名，任何一种余额分配的承诺交易都是可以广播的。
+
+
+Figure 2: Either of the Commitment Transactions can be broadcast any any time by either party, only one will successfully spend from the single Funding Transaction. This cannot work because one party will not want to broadcast the most recent transaction.
+
+> 图2：任何一方都可以在任何时间广播任何一笔承诺交易，当然，只有一笔是最终有效的。因为可能有一方并不希望广播最近的交易，却又无法限制这种情况，所以此方案存在缺陷。
+
+Since either party may broadcast the Commitment Transaction at any time, the result would be after the new Commitment Transaction is gener- ated, the one who receives less funds has significant incentive to broadcast the transaction which has greater values for themselves in the Commitment Transaction outputs. As a result, the channel would be immediately closed and funds stolen. Therefore, one cannot create payment channels under this model.
+
+> 由于任何一方都可以再任何时间广播承诺交易，那么在生成新的承诺交易后，持有较少资金的一方有显著的动机广播对自身输出金额更大的承诺交易。结果，该通道将立即关闭，资金将被窃取，因此，这种模式是无法安全的建立支付通道的。
+
+
+#### 3.1.4 Commitment Transactions: Ascribing Blame
+#### 3.1.4 承诺交易：归咎责任
+
+Since any signed Commitment Transaction may be broadcast on the blockchain,  and only one can be successfully broadcast,  it is necessary   to prevent old Commitment Transactions from being broadcast.   It is   not possible to revoke tens of thousands of transactions in Bitcoin, so an alternate method is necessary. Instead of active revocation enforced by the blockchain, it’s necessary to construct the channel itself in similar manner to a Fidelity Bond, whereby both parties make commitments, and violations of these commitments are enforced by penalties. If one party violates their agreement, then they will lose all the money in the channel.
+
+> 由于任何已签署的承诺交易都可以在区块链上广播，并且只能成功广播其中一笔交易，因此有必要防止旧的承诺交易被广播。但同时撤销数万笔比特币交易时不可能的，因此有必要采用另一种方法。与区块链强制执行的主动撤销不同，应该以类似于忠诚契约的方式来构造通道本身，双方据此作出承诺，当违反这些承诺时将会受到惩罚。如果一方违反了协议，他将失去通道中所有的资金。
+
+For this payment channel, the contract terms are that both parties commit to broadcasting only the most recent transaction. Any broadcast of older transactions will cause a violation of the contract, and all funds are given to the other party as a penalty.
+
+> 这种支付通道遵循这样的合同条款：双方承诺只广播最近的交易。任何旧交易的广播都将违反合同，所有的资金都将作为罚款给予另一方。
+
+This can only be enforced if one is able to ascribe blame for broad- casting an old transaction. In order to do so, one must be able to uniquely identify who broadcast an older transaction. This can be done if each coun- terparty has a uniquely identifiable Commitment Transaction. Both parties must sign the inputs to the Commitment Transaction which the other party is responsible for broadcasting. Since one has a version of the Commitment Transaction that is signed by the other party, one can only broadcast one’s own version of the Commitment Transaction.
+
+> 只有当一方可以对广播旧交易的另一方施以惩罚时，这一机制才能生效。为了做到这一点，必须能唯一的标识谁广播了较早的承诺交易。这需要每一方都有一笔唯一并可标识的承诺交易。双方必须签署对方负责广播的承诺交易的输入。如果一方拥有对方签署的承诺交易，他就可以放心广播自己所创建的承诺交易。
+
+For the Lightning Network, all spends from the Funding Transaction output, Commitment Transactions, have two half-signed transactions. One Commitment Transaction in which Alice signs and gives to Bob (C1b), and another which Bob signs and gives to Alice (C1a). These two Commitment Transactions spend from the same output (Funding Transaction), and have different contents; only one can be broadcast on the blockchain, as both pairs of Commitment Transactions spend from the same Funding Transac- tion. Either party may broadcast their received Commitment Transaction by signing their version and including the counterparty’s signature. For ex- ample, Bob can broadcast Commitment C1b, since he has already received the signature for C1b from Alice —he includes Alice’s signature and signs C1b himself. The transaction will be a valid spend from the Funding Trans- action’s 2-of-2 output requiring both Alice and Bob’s signature.
+
+> 对于闪电网络，所有的来自于保证金交易的输出的花费，即承诺交易们，都只有一半签名。其中 Alice对一笔承诺交易签名并发给Bob(C1b)，Bob对另一笔承诺交易并发给Alice(C1a)。这两笔承诺交易的输入来自于同一笔(保证金)交易，但是内容不同；这两笔交易只有一笔可以在区块链上广播。任何一方都可以收到包含对方签名的承诺交易，然后加上自己的签名进行广播。例如，Bob可以广播承诺交易C1b，因为他已经从Alice那里收到了C1b的签名--他只需要再对C1b自己签署一遍就可以了。这笔交易将是保证金交易2/2输出的有效花费，因为同时包含了Alice和Bob的签名。
+
