@@ -94,6 +94,8 @@ Commitment Transactions pay out the respective current balances to each party. A
 
 > 承诺交易会向每一方支付各自的流动余额。一个简单(不完整)的方法就是构建一笔交易，该交易花费2/2多重签名保证金交易的输入，有两个输出，就是将当前通道的余额返回给通道双方。通过创建这笔初始承诺交易，将会把通道资金的原始余额返回给双方。
 
+![Figure1](figures/figure1.png?raw=true "Figure1")
+
 Figure 1: A naive broken funding transaction is described in this diagram. The Funding Transaction (F), designated in green, is broadcast on the blockchain after all other trans- actions are signed. All other transactions spending from the funding transactions are not yet broadcast, in case the counterparties wish to update their balance. Only the Funding Transaction is broadcast on the blockchain at this time.
 
 > 图一：图1描述了一个简单的分配保证金交易的方法。绿色的部分代表保证金交易(F)，当其他交易都签署之后才在区块链上广播，以防交易对手更新他们的通道余额。此场景中只有保证金交易才会被广播。
@@ -111,6 +113,8 @@ is now 0.4 to Alice and 0.6 to Bob, and a new Commitment Transaction is created 
 
 > 当双方都同意新的承诺交易并为其交换签名的时候，任一提交的交易都可以被广播。由于保证金交易的输出只能花费一次，因此这些交易中只有一个是有效的。例如，如果Alice和Bob同意当前支付通道的余额分配是Alice拥有0.4BTC，Bob拥有0.6BTC，就需要创建一笔新的承诺交易来反映当前情况。此时之前的承诺交易也有可能被广播。实际上，当前无法限制广播哪个承诺交易，因为双方都已经交换的签名，任何一种余额分配的承诺交易都是可以广播的。
 
+
+![Figure2](figures/figure2.png?raw=true "Figure2")
 
 Figure 2: Either of the Commitment Transactions can be broadcast any any time by either party, only one will successfully spend from the single Funding Transaction. This cannot work because one party will not want to broadcast the most recent transaction.
 
