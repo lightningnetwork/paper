@@ -144,3 +144,218 @@ For the Lightning Network, all spends from the Funding Transaction output, Commi
 
 > 对于闪电网络，所有的来自于保证金交易的输出的花费，即承诺交易们，都只有一半签名。其中 Alice对一笔承诺交易签名并发给Bob(C1b)，Bob对另一笔承诺交易并发给Alice(C1a)。这两笔承诺交易的输入来自于同一笔(保证金)交易，但是内容不同；这两笔交易只有一笔可以在区块链上广播。任何一方都可以收到包含对方签名的承诺交易，然后加上自己的签名进行广播。例如，Bob可以广播承诺交易C1b，因为他已经从Alice那里收到了C1b的签名--他只需要再对C1b自己签署一遍就可以了。这笔交易将是保证金交易2/2输出的有效花费，因为同时包含了Alice和Bob的签名。
 
+![Figure3](figures/figure3.png?raw=true "Figure3")
+
+Figure 3: Purple boxes are unbroadcasted transactions which only Alice can broadcast. Blue boxes are unbroadcasted transaction which only Bob can broadcast. Alice can only broadcast Commitment 1a, Bob can only broadcast Commitment 1b. Only one Commit- ment Transaction can be spent from the Funding Transaction output. Blame is ascribed, but either one can still be spent with no penalty.
+
+> 图3：紫色方框是没有广播的交易，只有Alice可以广播。同理，蓝色方框也是没有广播的交易，只有Bob才能广播。Alice只能广播承诺交易1a，Bob只能广播承诺交易1b。消费保证金交易的输出中只有一笔承诺交易可以成功花费。在责任约束下，只有一方可以毫无代价的花费掉资金。
+
+However, even with this construction, one has only merely allocated blame. It is not yet possible to enforce this contract on the Bitcoin blockchain. Bob still trusts Alice not to broadcast an old Commitment Transaction. At this time, he is only able to prove that Alice has done so via a half-signed transaction proof.
+
+> 然而，即使有了这样的机制，也只是责任上的约束。目前尚不可能在比特币区块链上执行该合约。Bob仍需要信任Alice不会广播旧的承诺交易。在这个例子中，他只能通过一笔完成一半签名的交易来信任Alice。
+
+### 3.2 Creating a Channel with Contract Revocation
+
+### 3.2 创建能够撤销合约的通道
+
+To be able to actually enforce the terms of the contract, it’s necessary to construct a Commitment Transaction (along with its spends) where one is able to revoke a transaction. This revocation is achievable by using data about when a transaction enters into a blockchain and using the maturity of the transaction to determine validation paths.
+
+> 为了能够确实的执行合约，有必要构建这样一笔承诺交易：交易本身以及这笔交易的输出花费，都是可撤销的。可以通过控制这笔交易何时广播入链，并使用交易的到期时间来确定验证路径，从而实现这种撤销。
+
+### 3.3 Sequence Number Maturity
+
+### 3.3 序列数到期时间
+
+Mark Freidenbach has proposed that Sequence Numbers can be en- forcible via a relative block maturity of the parent transaction via a soft-fork[12].  This would allow some basic ability to ensure some form   of relative block confirmation time lock on the spending script. In addition, an additional opcode, OP CHECKSEQUENCEVERIFY[13] (a.k.a.  OP RELATIVECHECKLOCKTIMEVERIFY)[14], would permit further abilities, including allowing a stop-gap solution before a more permanent solution for resolving transaction malleability. A future version of this paper will include proposed solutions.
+
+> Mark Freidenbach提出，通过软分叉[12]，可以设置一个序列数字，只有父交易的区块确认数达到序列数的要求后，交易才能生效。这将允许支出脚本实现一些基本的功能，可以在区块达到一定确认数目之后才会执行。另外，还可以增加一个操作码，OP_CHECKSEQUENCEVERIFY[13] (或者命名为OP_RELATIVECHECKLOCKTIMEVERIFY)[14]，它将允许更多的功能，包括在完全解决交易延展性问题的方案实行之前先实行一个临时解决方案。本文将来会持续更新建议的解决方案。
+
+
+To summarize, Bitcoin was released with a sequence number which was only enforced in the mempool of unconfirmed transactions. The origi- nal behavior permitted transaction replacement by replacing transactions in the mempool with newer transactions if they have a higher sequence num- ber. Due to transaction replacement rules, it is not enforced due to denial of service attack risks. It appears as though the intended purpose of the sequence number is to replace unbroadcasted transactions. However, this higher sequence number replacement behavior is unenforcible. One cannot be assured that old versions of transactions were replaced in the mempool and a block contains the most recent version of the transaction. A way to enforce transaction versions off-chain is via time commitments.
+
+> 总而言之，比特币系统会将这些带有序列数的交易一直强制放在内存池中，暂时不打包进区块链。如果内存池中有另外一笔交易包含更高的序列数，就用这笔交易替换原先的交易。根据交易替换的规则，由于存在拒绝服务攻击的风险，这不是强制执行的。表面上看，引入序列号的目的是更新未成功广播的交易。但是，这种更高的序列号交易替换行为不是强制的。并不能绝对保证内存池中交易的旧版本一定会被替换，也不能保证区块中一定打包进最新版本的交易。这需要在链下通过时间承诺的方法强制确保最新的交易生效。
+
+A Revocable Transaction spends from a unique output where the transaction has a unique type of output script. This parent’s output has two redemption paths where the first can be redeemed immediately, and the second can only be redeemed if the child has a minimum number of con- firmations between transactions. This is achieved by making the sequence number of the child transaction require a minimum number of confirmations from the parent. In essence, this new sequence number behavior will only permit a spend from this output to be valid if the number of blocks between the output and the redeeming transaction is above a specified block height.
+
+> 一笔可撤销的交易的输入来自于特定唯一输出的一笔交易。这些父交易都有两个输出，其中第一个可以立即被赎回，第二个只能在当前交易得到足够确认数的情况下才能赎回。这是通过使子交易的序列数受父交易的最小确认数约束实现的。实际上，这种新的包含有序列数的交易，只允许输出和赎回交易之间的区块数目超过指定高度时，此输出的花费才有效。
+
+A transaction can be revoked with this sequence number behavior by creating a restriction with some defined number of blocks defined in the sequence number, which will result in the spend being only valid after the parent has entered into the blockchain for some defined number of blocks. This creates a structure whereby the parent transaction with this output becomes a bonded deposit, attesting that there is no revocation. A time period exists which anyone on the blockchain can refute this attestation by broadcasting a spend immediately after the transaction is broadcast.
+
+> 一笔交易可以通过设定一个序列数的方法撤销，创建一笔次包含序列数的交易，当其父交易广播入链后，再经过指定数目的区块确认之后此交易才能生效。这创建了一个结构，其中具有该输出的父交易成为一笔有担保的存款，以证明此交易还没有撤销。锁定时间内，如果有人广播这笔交易想要花费它，其他任何人都能立即检测到这笔支出来反驳这一证明。
+
+If one wishes to permit revocable transactions with a 1000- confirmation delay, the output transaction construction would remain a 2-of-2 multisig:
+
+> 如果一个人希望允许将可撤销的交易延迟确认时间设置为1000个确认，那么如果这是一笔2/2多重签交易的话，输出的构造是这样的：
+
+```
+2 <Alice1> <Bob1> 2 OP CHECKMULTISIG
+```
+
+However, the child spending transaction would contain a nSequence value of 1000. Since this transaction requires the signature of both coun- terparties to be valid, both parties include the nSequence number of 1000 as part of the signature. Both parties may, at their discretion, agree to create another transaction which supersedes that transaction without any nSequence number.
+
+> 然后，消费它的子交易将包含一个序列数1000。由于此交易需要双方的签名才能生效，所以双方都将序列数1000作为签名的一部分。双方可以根据情况自行决定创建另一笔没有序列数的交易来废弃原先的交易。
+
+This construction, a Revocable Sequence Maturity Contract (RSMC), creates two paths, with very specific contract terms.
+
+> 这个结构，被称作序列到期可撤销合约(RSMC)，它通过非常具体的智能合约，创建了两个花费保证金交易的路径。
+
+The contract terms are:
+
+> 合约条款如下：
+
+1. All parties pay into a contract with an output enforcing this contract
+
+2. Both parties may agree to send funds to some contract, with some waiting period (1000 confirmations in our example script). This is the revocable output balance.
+
+3. One or both parties may elect to not broadcast (enforce) the payouts until some future date; either party may redeem the funds after the waiting period at any time.
+
+4. If neither party has broadcast this transaction (redeemed the funds), they may revoke the above payouts if and only if both parties agree to do so by placing in a new payout term in a superseding transaction pay- out. The new transaction payout can be immediately redeemed after the contract is disclosed to the world (broadcast on the blockchain).
+
+5. In the event that the contract is disclosed and the new payout structure is not redeemed, the prior revoked payout terms may be redeemed by either party (so it is the responsibility of either party to enforce the new terms).
+
+> 1. 双方签订一份合约，该合约有一个输出确保执行
+
+> 2. 双方同意发送一部分资金给合约，这部分资金需要一段时间才能解锁使用(在我们的例子中需要1000个确认)。这部分输出金额是可以撤销的。
+
+> 3. 一方或双方可以暂时不广播支付交易；直到等待期之后，任何一方都可以随时赎回资金。
+
+> 4. 如果双方都没有广播这笔交易(赎回资金)，只有双方同意在替代交易的支出中加入新的合约时，他们才可以撤销上述支出。新的交易支出可以在合约披露(广播入链)后立即赎回。
+
+> 5. 如果合约被披露，新的支付却没有立即被赎回，任何一方都可以赎回之前被撤销的支付条款（因此，任何一方都有责任执行新合约）。
+
+The pre-signed child transaction can be redeemed after the parent transaction has entered into the blockchain with 1000 confirmations, due to the child’s nSequence number on the input spending the parent.
+
+> 在父交易经过1000个确认之后，预签名的子交易输出可以赎回。这是因为子交易输入中的序列数受它所花费的父交易的限制。
+In order to revoke this signed child transaction, both parties just agree to create another child transaction with the default field of the nSequence number of MAX INT, which has special behavior permitting spending at any time.
+
+> 为了撤销这笔已经签名的子交易，双方需要协商使用MAX_INT类型的序列数默认字段创建另一笔子交易，该字段具有允许随时花费的特殊行为。
+
+This new signed spend supersedes the revocable spend so long as the new signed spend enters into the blockchain within 1000 confirmations of the parent transaction entering into the blockchain. In effect, if Alice and Bob agree to monitor the blockchain for incorrect broadcast of Commitment Transactions, the moment the transaction gets broadcast, they are able to spend using the superseding transaction immediately. In order to broadcast the revocable spend (deprecated transaction), which spends from the same output as the superseding transaction, they must wait 1000 confirmations. So long as both parties watch the blockchain, the revocable spend will never enter into the transaction if either party prefers the superseding transaction.
+
+> 只要新签名交易的花费在父交易1000个确认时间内广播入链，这笔交易就会取代之前可撤销的承诺交易。实际上，如果Alice和Bob一直在监视区块链，当有人作弊想要广播旧的承诺交易时，他们可以立即广播其替代交易。而作弊者广播的交易需要等待1000个确认，在这之前其资金已经被替代交易花费掉了。所以只要双方都关注区块链，同一时间总有一方更倾向于广播替代交易，那么实际上可撤销的承诺交易永远实际不会进入区块链。
+
+Using this construction, anyone could create a transaction, not broad-
+cast the transaction, and then later create incentives to not ever broadcast that transaction in the future via penalties. This permits participants on the Bitcoin network to defer many transactions from ever hitting the blockchain.
+
+> 通过这种结构，任何人都可以仅创建一笔交易而不去立即广播它，这以后通过惩罚来约束人们不去实际广播这笔交易。这使得比特币网络上的参与者可以把许多交易推迟广播入链。
+
+#### 3.3.1 Timestop
+
+#### 3.3.1 减时标识
+
+To mitigate a flood of transactions by a malicious attacker requires a credible threat that the attack will fail.
+
+> 为了减少恶意攻击者发起的大量交易，需要一个可靠的震慑方案来阻止攻击。
+
+Greg Maxwell proposed using a timestop to mitigate a malicious flood on the blockchain:
+
+There are many ways to address this [flood risk] which haven’t been adequately explored yet —for example, the clock can stop when blocks are full; turning the security risk into more hold-up delay in the event of a dos attack.[15]
+
+> Greg Maxwell建议使用一个timestop(减时标识)来缓解区块链上的大量交易洪水攻击：
+
+> 有很多方法可以解决这个[洪水攻击风险]，但这些方法还没有得到充分的探索--例如，可以再区块链写满的时候停止计时，再DDOS攻击事件中，将安全风险用延迟方案来缓解。
+
+This can be mitigated by allowing the miner to specify whether the current (fee paid) mempool is presently being flooded with transactions. They can enter a “1” value into the last bit in the version number of the block header. If the last bit in the block header contains a “1”, then that block will not count towards the relative height maturity for the nSequence value and the block is designated as a congested block. There is an uncongested block height (which is always lower than the normal block height). This block height is used for the nSequence value, which only counts block maturity (confirmations).
+
+> 这可以通过让矿工来判断当前的交易费率下，内存池中是否充斥着大量的交易来缓解。他们可以把区块头版本号的最后一位置为”1”。如果区块头最后一位包含”1”，那么该区块不计入nSequence值的相对高度成熟度，并且指定该区块为拥塞块。同时引入一个指标代表不拥挤的块的块高度(这个值总是低于正常块高度)。这个块高度用于与nSequence值比较，它只用于计算块的成熟度（确认数）。
+
+A miner can elect to define the block as a congested block or not. The default code could automatically set the congested block flag as “1” if the mempool is above some size and the average fee for that set size is above some value. However, a miner has full discretion to change the rules on what automatically sets as a congested block, or can select to permanently set the congestion flag to be permanently on or off. It’s expected that most honest miners would use the default behavior defined in their miner and not organize a 51% attack.
+
+> 矿工可以选择将块定义为拥塞块或不拥塞块，默认代码可以在内存池中支付交易费用的交易超过一定限制后，自动将拥塞块标志为”1”。另外，矿工可以自己定义什么才是一个拥塞块，也可以选择将所有的块都标志位拥塞块或非拥塞块。我们估计诚实的矿工将使用默认定义行为，不会发动51%攻击。
+
+For example, if a parent transaction output is spent by a child with a nSequence value of 10, one must wait 10 confirmations before the transaction becomes valid. However, if the timestop flag has been set, the counting of confirmations stops, even with new blocks. If 6 confirmations have elapsed (4 more are necessary for the transaction to be valid), and the timestop block has been set on the 7th block, that block does not count towards the nSequence requirement of 10 confirmations; the child is still at 6 blocks for the relative confirmation value. Functionally, this will be stored as some kind of auxiliary timestop block height which is used only for tracking the timestop value. When the timestop bit is set, all transactions using an nSe- quence value will stop counting until the timestop bit has been unset. This gives sufficient time and block-space for transactions at the current auxil- iary timestop block height to enter into the blockchain, which can prevent systemic attackers from successfully attacking the system.
+
+> 举例来说，如果一个nSequence值为10的子交易消费了其父交易的输出，就必须等待父交易10个确认后才能生效。但是，如果设置了timestop标识，即使产生新的区块，确认数也可能停止计数。比如经过了6个确认之后(还需要另外4个确认才能让交易有效)，第7个区块设定的timestop标识，那么该区块就不会计入nSequence的计数器。对于子交易来说，相对确认数仍然是6。要实现这些，就需要一个跟踪timestop 标识的区块高度值。当设置了timestop标识时，所有使用nSequence的交易将停止确认数计数，直到下一个没有设置timestop标识的区块入链。这为当前受timestop标识的块影响的交易进入区块链提供了足够的时间和块空间，这可以成功防止攻击者。
+
+However, this requires some kind of flag in the block to designate whether it is a timestop block. For full SPV compatibility (Simple Payment Verification; lightweight clients), it is desirable for this to be within the 80- byte block header instead of in the coinbase. There are two places which may be a good place to put in this flag in the block header: in the block time and in the block version. The block time may not be safe due to the last bits being used as an entropy source for some ASIC miners, therefore a bit may need to be consumed for timestop flags. Another option would be to hardcode timestop activation as a hard consensus rule (e.g. via block size), however this may make things less flexible. By setting sane defaults for timestop rules, these rules can be changed without consensus soft-forks.
+
+> 但是，这需要在块中使用某种标记来指定它是否是timestop区块，还要完全兼容SPV(简单支付验证，轻客户端)，最好设定在区块头的80字节中，而不是coinbase信息里。区块头有两个地方可以很好的放入这个标记：块时间戳或者块版本号。块时间戳可能是不安全的，因为最后一个位空间被一些ASIC矿工用作随机熵源。另一种选择是将timestop激活硬编码为一个严格的一致规则（例如，通过区块大小来区分），但这可能会降低灵活性。要想为timestop设定一个健全的机制，最好可以不需要软分叉就能调整这些规则。
+
+If the block version is used as a flag, the contextual information must match the Chain ID used in some merge-mined coins.
+
+> 如果使用块版本号作为标识，那么在合并挖矿中，上下文信息必须保持一致的Chain ID。
+
+
+#### 3.3.2 Revocable Commitment Transactions
+
+#### 3.3.2 可撤销的承诺交易
+
+By combining the ascribing of blame as well as the revocable transaction, one is able to determine when a party is not abiding by the terms of the contract, and enforce penalties without trusting the counterparty.
+
+> 把责任归咎和可撤销交易结合起来，就可以确定对方何时不遵守合约，无需互相授信就可以处罚对方。
+
+![Figure4](figures/figure4.png?raw=true "Figure4")
+
+Figure 4: The Funding Transaction F, designated in green, is broadcast on the blockchain after all other transactions are signed. All transactions which only Alice can broadcast are in purple. All transactions which only Bob can broadcast is are blue. Only the Funding Transaction is broadcast on the blockchain at this time.
+
+> 图4:当所有其它交易签署之后，在区块链上广播绿色方框的保证金交易F。所有只有Alice可以广播的交易用紫色框框标识。所有只有Bob可以广播的交易用蓝色框框标识。只有保证金交易才会广播入链。
+
+The intent of creating a new Commitment Transaction is to invalidate all old Commitment Transactions when updating the new balance with a new Commitment Transaction. Invalidation of old transactions can happen by making an output be a Revocable Sequence Maturity Contract (RSMC). To invalidate a transaction, a superseding transaction will be signed and exchanged by both parties that gives all funds to the counterparty in the event an older transaction is incorrectly broadcast. The incorrect broadcast is identified by creating two different Commitment Transactions with the same final balance outputs, however the payment to oneself is encumbered by an RSMC.
+
+> 创建新承诺交易的目的是：当更新交易通道双方余额时，通过使用序列到期可撤销合约(RSMC)，作废旧的承诺交易。为了做到这些，交易双方将签署和交换一笔替代交易，如果旧的承诺交易被错误广播，广播方就会失去所有的资金。这里的两笔承诺交易的输出金额相同，但是返还给自己的输出受RSMC的制约。
+
+In effect, there are two Commitment Transactions from a single Fund- ing Transaction 2-of-2 outputs. Of these two Commitment Transactions, only one can enter into the blockchain. Each party within a channel has one version of this contract. So if this is the first Commitment Transaction pair, Alice’s Commitment Transaction is defined as C1a, and Bob’s Commitment Transaction is defined as C1b. By broadcasting a Commitment Transac- tion, one is requesting for the channel to close out and end. The first two outputs for the Commitment Transaction include a Delivery Transaction (payout) of the present unallocated balance to the channel counterparties. If Alice broadcasts C1a, one of the output is spendable by D1a, which sends funds to Bob. For Bob, C1b is spendable by D1b, which sends funds to Alice. The Delivery Transaction (D1a/D1b) is immediately redeemable and is not encumbered in any way in the event the Commitment Transaction is broadcast.
+
+> 实际上，两笔承诺交易来自于同一笔2/2保证金交易的输出。这两笔承诺交易，最终只有一笔能广播入链。交易通道双方各持有这笔合约交易的一个版本，比如第一对承诺交易，Alice持有的承诺交易定义为C1a，Bob持有的承诺交易定义为C1b。直到有一方请求关闭支付通道时，才会广播C1a或C1b。承诺交易有两个输出，其中一个输出将当前未分配余额支付给通道对手方。如果Alice广播C1a，其中一个输出可由D1a消费，D1a将向Bob发送资金。对于Bob来说，C1b可以被D1b消费，D1b会向Alice发送资金。当承诺交易广播后，支付交易(D1a/D1b)都可以立即赎回。
+
+For each party’s Commitment Transaction, they are attesting that they are broadcasting the most recent Commitment Transaction which they own. Since they are attesting that this is the current balance, the balance paid to the counterparty is assumed to be true, since one has no direct benefit by paying some funds to the counterparty as a penalty.
+
+> 对于当前持有承诺交易的双方，他们会倾向于只广播持有的承诺交易，此交易反映了双方的资金余额，这些支付给对手方的余额是正确的，因为广播另外的承诺交易会损失资金，并不会为自己带来好处。
+
+The balance paid to the person who broadcast the Commitment Transaction, however, is unverified. The participants on the blockchain have no idea if the Commitment Transaction is the most recent or not. If they do not broadcast their most recent version, they will be penalized by taking all the funds in the channel and giving it to the counterparty. Since their own funds are encumbered in their own RSMC, they will only be able to claim their funds after some set number of confirmations after the Commitment Transaction has been included in a block (in our example, 1000 confirmations). If they do broadcast their most recent Commitment Transaction, there should be no revocation transaction superseding the revocable transaction, so they will be able to receive their funds after some set amount of time (1000 confirmations).
+
+> 然而，广播承诺交易的一方收到的资金是未经核实的。参与者并不能通过区块链分辨这是否是最近的承诺交易。由于他们自己的资金锁定在RSMC中，他们只能在承诺交易进入区块链经过指定数目的确认(在我们的示例中，是1000个确认)之后，才能提取资金， 如果广播的承诺交易不是最新版本，他们将会受到惩罚，会失去通道内的资金。如果他们确实广播了最近的承诺交易，那么就不会有人广播撤销交易，他们将能够在一定时间后收到他们的资金（1000个确认）。
+
+By knowing who broadcast the Commitment Transaction and encum- bering one’s own payouts to be locked up for a predefined period of time, both parties will be able to revoke the Commitment Transaction in the fu- ture.
+
+> 通过监视谁广播了承诺交易，并将自己的支付所锁定一段预定的时间，将来双方都可以撤销承诺交易。
+
+#### 3.3.3 Redeeming Funds from the Channel: Cooperative Counterparties 
+
+#### 3.3.3 从支付通道中赎回资金：双方合作
+
+Either party may redeem the funds from the channel. However, the party that broadcasts the Commitment Transaction must wait for the predefined number of confirmations described in the RSMC. The counterparty which did not broadcast the Commitment Transaction may redeem the funds im- mediately.
+
+> 虽然任何一方都可以从该通道赎回资金。然而，广播承诺交易的一方必须等待区块确认数到达RSMC    中描述的预定义确认数才能赎回。没有广播承诺交易的对手方可以即时赎回承诺资金。
+
+For example, if the Funding Transaction is committed with 1 BTC (half to each counterparty) and Bob broadcasts the most recent Commit- ment Transaction, C1b, he must wait 1000 confirmations to receive his 0.5 BTC, while Alice can spend 0.5 BTC. For Alice, this transaction is fully closed if Alice agrees that Bob broadcast the correct Commitment Transac- tion (C1b).
+
+> 例如，如果一笔保证金交易锁定了1BTC(每一方有0.5BTC)，Bob广播了最近的承诺交易C1b，他必须等待1000个确认之后才能赎回属于他的0.5BTC，同时Alice可以立即收到她的0.5BTC。对于Alice来说，如果Alice同意Bob广播的承诺交易C1b是正确的，那支付通道就可以关闭。
+
+![Figure5](figures/figure5.png?raw=true "Figure5")
+
+Figure 5: When Bob broadcasts C1b, Alice can immediately redeem her portion. Bob must wait 1000 confirmations. When the block is immediately broadcast, it is in this  state. Transactions in green are transactions which are committed into the blockchain.
+
+> 图5: 当Bob广播C1b时，Alice可以立即赎回她的的部分，而Bob必须等待1000个确认。当交易广播时，就处于图上这种状况。绿框中代表打包到区块链后立即生效的交易。
+
+After the Commitment Transaction has been in the blockchain for 1000 blocks, Bob can then broadcast the Revocable Delivery transaction. He must wait 1000 blocks to prove he has not revoked this Commitment Transaction (C1b). After 1000 blocks, the Revocable Delivery transaction will be able to be included in a block. If a party attempt to include the Revocable Delivery transaction in a block before 1000 confirmations, the transaction will be invalid up until after 1000 confirmations have passed (at which point it will become valid if the output has not yet been redeemed).
+
+> 承诺交易打包进区块链中经过1000个确认之后，Bob才可以广播赎回交易来收回资金。他必须等待1000个确认来证明自己没有撤销这笔承诺交易(C1b)。在1000个确认之后，承诺交易的赎回部分才能打包进块。如果一方试图在1000个确认之前将可撤销的赎回交易打包入块，那么这笔交易将会失效，一定需要等1000个确认之后，如果此时输出尚未赎回，那么该交易才是有效的。
+
+![Figure6](figures/figure6.png?raw=true "Figure6")
+
+Figure 6:  Alice agrees that Bob broadcast the correct Commitment Transaction and  1000 confirmations have passed. Bob then is able to broadcast the Revocable Delivery (RD1b) transaction on the blockchain.
+
+> 图6： Alice同意Bob广播的承诺交易是正确的。这笔交易也经过了1000个确认，此时Bob可以在区块链上广播可撤销赎回交易(RD1b)
+
+
+After Bob broadcasts the Revocable Delivery transaction, the channel is fully closed for both Alice and Bob, everyone has received the funds which they both agree are the current balance they each own in the channel.
+
+> 当Bob广播可撤销赎回交易时，他与Alice之间的支付通道完全关闭，每个人都收回了他们协商一致的资金，这些资金是他们各自在支付通道中拥有的当前余额。
+
+If it was instead Alice who broadcast the Commitment Transaction (C1a), she is the one who must wait 1000 confirmations instead of Bob.
+
+> 如果广播承诺交易(C1a)的是Alice，那么她必须等待1000个确认，而不是Bob。
+
+#### 3.3.4 Creating a new Commitment Transaction and Revoking Prior Commitments 
+
+#### 3.3.4 创建新的承诺交易并撤销之前的承诺交易
+
+While each party may close out the most recent Commitment Transaction at any time, they may also elect to create a new Commitment Transaction and invalidate the old one.
+Suppose Alice and Bob now want to update their current balances from 0.5 BTC each refunded to 0.6 BTC for Bob and 0.4 BTC for Alice.
+
+When they both agree to do so, they generate a new pair of Commitment Transactions.
+
+![Figure7](figures/figure7.png?raw=true "Figure7")
+
+Figure 7: Four possible transactions can exist, a pair with the old commitments, and another pair with the new commitments. Each party inside the channel can only broadcast half of the total commitments (two each). There is no explicit enforcement preventing any particular Commitment being broadcast other than penalty spends, as they are all valid unbroadcasted spends.  The Revocable Commitment  still exists with the C1a/C1b pair,  but are not displayed for brevity.
