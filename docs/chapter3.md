@@ -461,7 +461,7 @@ The purpose of closing out cooperatively is to reduce the number   of transactio
 
 Channels may remain in perpetuity until they decide to cooperatively close out the transaction, or when one party does not cooperate with another and the channel gets closed out and enforced on the blockchain.
 
-> 祝福通道可以一直保持，直到双方决定协作完成交易，或者一方不与另一方合作关闭通道，并最终在区块链上强制结算。
+> 支付通道可以一直保持，直到双方决定协作完成交易，或者一方不与另一方合作关闭通道，并最终在区块链上强制结算。
 
 ### 3.5 Bidirectional Channel Implications and Summary
 
