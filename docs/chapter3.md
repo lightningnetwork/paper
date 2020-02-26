@@ -359,3 +359,118 @@ When they both agree to do so, they generate a new pair of Commitment Transactio
 ![Figure7](figures/figure7.png?raw=true "Figure7")
 
 Figure 7: Four possible transactions can exist, a pair with the old commitments, and another pair with the new commitments. Each party inside the channel can only broadcast half of the total commitments (two each). There is no explicit enforcement preventing any particular Commitment being broadcast other than penalty spends, as they are all valid unbroadcasted spends.  The Revocable Commitment  still exists with the C1a/C1b pair,  but are not displayed for brevity.
+
+> 图7: 同时存在四笔可能的交易，包括一对旧的承诺交易，以及另外一对新承诺交易。支付通道中的每一方只能广播其中其中两笔承诺交易。除了罚款外，没有明确的强制措施阻止任何特定的承诺交易被广播，因为他们都具有合法的未花费的输入。可撤销的承诺仍然存在于C1a/C1b交易对中仍然存在，但是为了表示简单，没有画上去。
+
+
+When a new pair of Commitment Transactions (C2a/C2b) is agreed upon, both parties will sign and exchange signatures for the new Commit- ment Transaction, then invalidate the old Commitment Transaction. This invalidation occurs by having both parties sign a Breach Remedy Trans- action (BR1), which supersedes the Revocable Delivery Transaction (RD1). Each party hands to the other a half-signed revocation (BR1) from their own Revocable Delivery (RD1), which is a spend from the Commitment Transac- tion. The Breach Remedy Transaction will send all coins to the counterparty within the current balance of the channel. For example, if Alice and Bob both generate a new pair of Commitment Transactions (C2a/C2b) and inval- idate prior commitments (C1a/C1b), and later Bob incorrectly broadcasts C1b on the blockchain, Alice can take all of Bob’s money from the channel. Alice can do this because Bob has proved to Alice via penalty that he will never broadcast C1b, since the moment he broadcasts C1b, Alice is able to take all of Bob’s money in the channel. In effect, by constructing a Breach Remedy transaction for the counterparty, one has attested that one will not be broadcasting any prior commitments. The counterparty can accept this, because they will get all the money in the channel when this agreement is violated.
+
+> 当新的承诺交易对(C2a/C2b)达成一致时，双方将各自签署新的承诺交易并交换签名，然后作废旧的承诺交易。作废交易是通过双方签署违约补偿交易(BR1)实现的，BR1取代了可撤销传送交易(RD1)。每一方从其自身的可撤销支付交易(RD1)中向另一方提交一份已经签署了一般的撤销部分(BR1)，这是承诺转让的费用。违约补偿交易将把通道内当前余额的所有比特币发送给对方。例如，如果Alice和Bob都生成了一对新的承诺交易(C1a/C2b)，并废弃了之前的承诺交易(C1a/C1b)，然后Bob再区块链上错误的广播了C1b，那么Alice可以从Bob的通道中拿走所有的钱。因为Bob已经通过惩罚合约向Alice证明了他永远不会广播C1b，所以自从他广播C1b的那一刻起，Alice就可以拿走Bob在通道内所有的钱。实际上，通过构建一个违约补偿协议，你就声明了你将不会广播任何之前的承诺交易。你的交易对手也会接收这个声明，因为当你违反这个协议时，他会得到通道内所有的钱。
+
+![Figure8](figures/figure8.png?raw=true "Figure8")
+
+Figure 8: When C2a and C2b exist, both parties exchange Breach Remedy transactions. Both parties now have explicit economic incentive to avoid broadcasting old Commitment Transactions (C1a/C1b). If either party wishes to close out the channel, they will only use C2a (Alice) or C2b (Bob). If Alice broadcasts C1a, all her money will go to Bob. If Bob broadcasts C1b, all his money will go to Alice. See previous figure for C2a/C2b outputs.
+
+> 图8:当C2a和C2b都构建之后，双方交换违约补偿交易。那么双方现在都有明确的经济动机来避免传播旧的承诺交易(C1a/C1b)。如果任何一方希望关闭通道，他们将只会广播C1a(Alice广播)或C2b(Bob广播)。如果Alice广播了C1a，她所有的钱都会给Bob。如果Bob广播了C1b，他所有的钱都会给Alice。C2a/C2b的输出见上图。
+
+Due to this fact, one will likely delete all prior Commitment Transac- tions when a Breach Remedy Transaction has been passed to the counter- party. If one broadcasts an incorrect (deprecated and invalidated Commit- ment Transaction), all the money will go to one’s counterparty. For example, if Bob broadcasts C1b, so long as Alice watches the blockchain within the predefined number of blocks (in this case, 1000 blocks), Alice will be able to take all the money in this channel by broadcasting RD1b.  Even if the present balance of the Commitment state (C2a/C2b) is 0.4 BTC to Alice and 0.6 BTC to Bob, because Bob violated the terms of the contract, all the money goes to Alice as a penalty. Functionally, the Revocable Transaction acts as a proof to the blockchain that Bob has violated the terms in the channel and this is programatically adjudicated by the blockchain.
+
+> 由于这一事实，当违约补偿交易已经发送给对手方时，可能会删除所有先前的承诺交易。如果广播了一笔错误的交易(对方不赞同或者无效)，通道内所有的钱将会给另一方。例如，如果Bob广播C1b，只要Alice在预定的新区块数内(在本例中为1000个新区快)一直监控区块链，Alice就能够通过广播RD1b接收该通道内的所有资金。即使当前承诺交易锁定(C1a/C2b)的余额分配为Alice 0.4BTC，Bob 0.6BTC也是这样。因为Bob违反了合约，作为惩罚，所有的钱都会给Alice。在同能上，可撤销的交易充当向区块链证明Bob违反了支付通道合约的证据，这是由区块链通过智能合约来裁定的。
+
+![Figure9](figures/figure9.png?raw=true "Figure9")
+
+Figure 9: Transactions in green are committed to the blockchain. Bob incorrectly broad- casts C1b (only Bob is able to broadcast C1b/C2b). Because both agreed that the current state is the C2a/C2b Commitment pair, and have attested to each party that old commit- ments are invalidated via Breach Remedy Transactions, Alice is able to broadcast BR1b and take all the money in the channel, provided  she does it within 1000 blocks after C1b  is broadcast.
+
+> 图9: 绿框内的交易被广播到区块链。此时Bob不应该广播C1b(只有Bob可以广播C1b/C2b)。因为双方现在就C2a/C2b承诺交易对达成了一致，并承认各自持有的之前的包含违约补偿的承诺交易已经无效了，如果违反协议，Alice将能立即广播BR1b，不需要等待1000个确认。
+
+However, if Alice does not broadcast BR1b within 1000 blocks, Bob may be able to steal some money, since his Revocable Delivery Transac- tion (RD1b) becomes valid after 1000 blocks. When an incorrect Commit- ment Transaction is broadcast, only the Breach Remedy Transaction can be broadcast for 1000 blocks (or whatever number of confirmations both parties agree to). After 1000 block confirmations, both the Breach Remedy (BR1b) and Revocable Delivery Transactions (RD1b) are able to be broad- cast at any time. Breach Remedy transactions only have exclusivity within this predefined time period, and any time after of that is functionally an expiration of the statute of limitations —according to Bitcoin blockchain consensus, the time for dispute has ended.
+
+> 但是，如果Alice没有在1000个确认内广播BR1b，Bob可能会偷走一些资金，因为它可以在1000个确认之后广播RD1b。当一方广播了错误的交易时，只有违约补偿交易可以不用等1000个确认就可以广播(不管双方协商多少确认数)。在1000个确认之后，违约补偿交易(BR1b)和可撤销传送交易(RD1b)可以在任何时候广播。违约补偿交易只有在预定义的时间段内具有排他性，在次之后的任何时间都是可以正常执行的--因为根据比特币区块链共识，限制时间已经结束了。
+
+For this reason, one should periodically monitor the blockchain to see if one’s counterparty has broadcast an invalidated Commitment Transaction, or delegate a third party to do so. A third party can be delegated by only giving the Breach Remedy transaction to this third party. They can be incentivized to watch the blockchain broadcast such a transaction in the event of counterparty maliciousness by giving these third parties some fee in the output. Since the third party is only able to take action when the counterparty is acting maliciously, this third party does not have any power to force close of the channel.
+
+> 因此，应该时刻监控区块链，以查看对方是否自己广播了非法的承诺交易，或者委托了第三方来监控。只要将违约补偿交易发送给第三方，就能委托监控。如果交易对手存在广播恶意交易的风险，那么可以通过在交易输出中向第三方监控者支付一定费用来激励他们监视区块链是否广播了这样的交易。另外三方监控者只能在交易对手发生恶意行为的时候采取行动，他无权强制关闭该通道。
+
+#### 3.3.5 Process for Creating Revocable Commitment Transactions
+
+#### 3.3.5 创建可撤销承诺交易的过程
+
+To create revocable Commitment Transactions, it requires proper construc- tion of the channel from the beginning, and only signing transactions which may be broadcast at any time in the future, while ensuring that one will not lose out due to uncooperative or malicious counterparties. This re- quires determining which public key to use for new commitments, as us- ing SIGHASH NOINPUT requires using unique keys for each Commitment Transaction RSMC (and HTLC) output. We use P to designate pubkeys and K to designate the corresponding private key used to sign.
+
+> 要创建可撤销承诺交易，需要一开始创建合适的支付通道，并签署在未来任何时候都可以广播的交易，同时确保不会因不合作或恶意的对手方而遭受损失。这个问题决定了在新的承诺交易终使用哪个公钥，因为使用SIGHASH NOINPUT操作符要求每一笔RSMC交易(以及HTLC)的输出都要使用唯一的密钥对。我们使用P来代表公钥，使用K代表用于签名的对应私钥。
+
+When generating the first Commitment Transaction, Alice and Bob agree to create a multisig output from a Funding Transaction with a single multisig(PAliceF , PBobF ) output, funded with 0.5 BTC from Alice and Bob  for a total of 1 BTC. This output is a Pay to Script Hash[16] transaction, which requires both Alice and Bob to both agree to spend from the Funding Transaction. They do not yet make the Funding Transaction (F) spendable. Additionally, PAliceF and PBobF are only used for the Funding Transaction, they are not used for anything else.
+
+> 当生成第一笔承诺交易时，Alice和Bob协商使用(PAliceF , PBobF )多签名创建一笔保证金交易，交易输出由Alice和Bob各提供0.5BTC资金，总共提供1BTC，这个输出是一个Pay to Script Hash脚本，需要Alice和Bob共同同意才能消费这笔交易。如果有一个人不同意，就无法消费这笔交易。此外，PAliceF 和 PBobF  仅能用于这笔保证金交易，不能有其它用途。
+
+Since the Delivery transaction is just a P2PKH output (bitcoin ad- dresses beginning with 1) or P2SH transaction (commonly recognized as ad- dresses beginning with the 3) which the counterparties designate beforehand, this can be generated as an output of PAliceD and PBobD. For  simplicity, these output addresses will remain the same throughout the channel, since its funds are fully controlled by its designated recipient after the Commit- ment Transaction enters the blockchain. If desired, but not necessary, both parties may update and change PAliceD and PBobD for future Commitment Transactions.
+
+> 由于传送交易是交易对手事先指定的P2PKH交易(比特币地址由1开头)或P2SH交易(比特币地址由3开头)，它作为PAliceD 和 PBobD 址共同签名才能花费的输出来构造。简单起见，如果需要的话，这些输出地址在通道中保持不变，在广播承诺交易打包进区块链之后，其资金完全由指定的接收方控制。但这不是必须的，双方可以在未来的承诺交易中更新或更换PAliceD 和 PBobD 。
+
+Both parties exchange pubkeys they intend to use for the RSMC (and HTLC described in future sections) for the Commitment Transaction. Each set of Commitment Transactions use their own public keys and are not ever reused.  Both parties may already know all future pubkeys by  using  a BIP 0032[17] HD Wallet construction by exchanging Master Public Keys during channel construction. If they wish to generate a new Commitment Transaction pair C2a/C2b, they use  multisig(PAliceRSMC2,  PBobRSMC2)  for the RSMC output.
+
+> 双方交换他们打算用于承诺交易中RSMC(以后后面章节描述的HTLC)的公钥。每一对承诺交易都使用自己的公钥，并且永远不会被重用。双方可能就所有未来的公钥达成共识，遵循BIP 0032[17] HD钱包的实现，在通道创建时交换各自的主密钥(Master Public Keys)。如果双方需要生成新的承诺交易C2a/C2b，他们就需要使用(PAliceRSMC2,  PBobRSMC2)  来构建多重签名的RSMC输出。
+
+After both parties know the output values from the Commitment Transactions, both parties create the pair of Commitment Transactions,
+e.g. C2a/C2b, but do not exchange signatures for the Commitment Trans- actions. They both sign the Revocable Delivery transaction (RD2a/RD2b) and exchange the signatures. Bob signs RD1a and  gives  it  to  Alice  (using KBobRSMC2), while Alice signs RD1b and gives it to Bob (using KAliceRSM C2).
+
+> 当双方就承诺交易的输出金额达成一致后，就可以创建像C2a/C2b这样一对承诺交易，但是创建时先不要交换签名。当创建对应的可撤销传送交易(RD2a/RD2b)并交换签名后，再为互相承诺交易签名。此时Bob使用KBobRSMC2  对RD1a签名并发送给Alice，同样的，Alice使用KAliceRSM C对RD1b签名并发送给Bob。
+
+When both parties have the Revocable Delivery transaction, they ex-
+change signatures for the Commitment Transactions. Bob signs C1a using KBobF  and gives it to Alice, and Alice signs C1b using  KAliceF  and gives it  to Bob.
+
+> 当双方都拥有可撤销传送交易后，就可以交换对应的承诺交易的签名。Bob使用KBobF为C1a签名并发送给Alice，同样的，Alice使用KAliceF  为C1b签名并发送给Bob。
+
+At this point, the prior Commitment Transaction as well as the new Commitment Transaction can be broadcast; both C1a/C1b and C2a/C2b are valid. (Note that Commitments older than the prior Commitment are invalidated via penalties.) In order to invalidate C1a and C1b, both parties exchange Breach Remedy Transaction (BR1a/BR1b) signatures for the prior commitment C1a/C1b. Alice sends BR1a to Bob  using  KAliceRSMC1,  and Bob sends BR1b to Alice using KBobRSMC1. When both Breach Remedy signatures have been exchanged, the channel state is now at the current Commitment C2a/C2b and the balances are now committed.
+
+> 此时，之前的承诺交易以及新生成的承诺交易都可以广播；C1a/C1b以及C2a/C2b都是合法的(注意更早的承诺交易已经因为惩罚约束失效了)。为了让C1a/C1b失效，双方需要交换对应C1a/C1b的违约补偿交易(BR1a/BR1b)的签名。Alice使用KAliceRSMC1为BR1a签名并发送给Bob，Bob使用KBobRSMC1为BR1b签名并发送给Alice。当双方交换了违约补偿交易的签名后，通道状态变为承认C2a/C2b的资金分配。
+
+However, instead of disclosing the BR1a/BR1b signatures, it’s also possible to just disclose the private keys to the counterparty. This is more effective as described later in the key storage section. One can disclose the private keys used in one’s own Commitment Transaction. For example, if Bob wishes to invalidate C1b, he sends his private keys used in C1b to Alice (he does NOT disclose his keys used in C1a, as that would permit coin theft). Similarly, Alice discloses all her private key outputs in C1a to Bob to invalidate C1a.
+
+> 但是，与其公开BR1a/BR1b签名，还可以只向对手公开私钥。就像下面章节的密钥存储部分描述的，公开自己在承诺交易中使用的私钥更有效。例如，如果Bob希望使C1b失效，他将会把在C1b中使用的私钥发送给Alice(他不会公开在C1a中使用的私钥，因为这会导致资金被窃取)。类似的，Alice向Bob公开C1a中使用的私钥，让C1a失效。
+
+If Bob incorrectly broadcasts C1b, then because Alice has all the private keys used in the outputs of C1b, she can take the money. However, only Bob is able to broadcast C1b. To prevent this coin theft risk, Bob should destroy all old Commitment Transactions.
+
+> 如果Bob错误的广播C1b，那么因为Alice拥有C1b所有输出使用的私钥，她就可以提取资金。然后，只有Bob才能广播C1b。为了防止资金被窃取的风险，Bob应该销毁所有旧的承诺交易。
+
+### 3.4 Cooperatively Closing Out a Channel
+
+### 3.4 协作关闭一个支付通道
+
+Both parties are able to send as many payments to their counterparty as they wish, as long as they have funds available in the channel, knowing that in the event of disagreements they can broadcast to the blockchain the current state at any time.
+
+> 双方都可以根据自己的意愿向对方发送尽可能多的款项，只要他们在频道中有可用资金。并且双方都明白，一旦出现分歧，他们随时可以向区块链广播当前状态。
+
+In the vast majority of cases, all the outputs from the Funding Trans- action will never be broadcast on the blockchain. They are just there in case the other party is non-cooperative, much like how a contract is rarely enforced in the courts. A proven ability for the contract to be enforced in a deterministic manner is sufficient incentive for both parties to act honestly.
+
+> 在绝大多数情况下，所有花费保证金交易输出的交易都不会在区块链上广播。它们只是用来防止另一方不合作，就像合同很少在法庭上强制执行一样。保证合同以确定性的方式执行足以激励双方诚实行事。
+
+When either party wishes to close out a channel cooperatively, they will be able to do so by  contacting the other party and spending from    the Funding Transaction with an output of the most current Commitment Transaction directly with no script encumbering conditions. No further pay- ments may occur in the channel.
+
+> 当任何一方希望通过协作关闭一个支付通道时，他们可以这样做，通过与对方协作广播最近的承诺交易花费保证金交易的输出，这笔交易不受任何脚本的阻碍。之后该通道内就不会构造其它任何支付交易了。
+
+![Figure10](figures/figure10.png?raw=true "Figure10")
+
+Figure 10:  If both counterparties are cooperative,  they take the balances in the cur-  rent Commitment Transaction and spend from the Funding Transaction with a Exercise Settlement Transaction (ES). If the most recent Commitment Transaction gets broadcast instead, the payout (less fees) will be the same.
+
+> 图10:如果交易双方是合作的，他们将当前承诺交易中的金额作为保证金交易的最终花费，构造一笔结算交易直接广播。这跟广播最后的承诺交易效果是相同的，而且可以节省交易费用。
+
+The purpose of closing out cooperatively is to reduce the number   of transactions that occur on the blockchain and both parties will be able to receive their funds immediately (instead of one party waiting for the Revocation Delivery transaction to become valid).
+
+> 合作结算的目的是减少区块链上广播的交易数量，双方将能够立即收到他们的资金(而不用一方等待可撤销传送交易失效)。
+
+Channels may remain in perpetuity until they decide to cooperatively close out the transaction, or when one party does not cooperate with another and the channel gets closed out and enforced on the blockchain.
+
+> 祝福通道可以一直保持，直到双方决定协作完成交易，或者一方不与另一方合作关闭通道，并最终在区块链上强制结算。
+
+### 3.5 Bidirectional Channel Implications and Summary
+
+### 3.5 双向支付通道的启示和总结
+
+By ensuring channels can update only with the consent of both parties, it is possible to construct channels which perpetually exist in the blockchain. Both parties can update the balance inside the channel with whatever output balances they wish, so long as it’s equal or less than the total funds commit- ted inside the Funding Transaction; balances can move in both directions. If one party becomes malicious, either party may immediately close out the channel and broadcast the most current state to the blockchain. By using a fidelity bond construction (Revocable Delivery Transactions), if a party violates the terms of the channel, the funds will be sent to the counterparty, provided the proof of violation (Breach Remedy Transaction) is entered into the blockchain in a timely manner. If both parties are cooperative, the chan- nel can remain open indefinitely, possibly for many years.
+
+> 通过确保支付通道只能在双方同意的情况下更新，就有可能构建永远存在于区块链中的通道。双方可以用任何他们希望的输出余额来更新通道内的资金分配，只要总输出等于或小于保证金交易的总输出；资金可以双向流动。如果一方有恶意行动，任何一方都可以立即关闭支付通道并向区块链广播最新状态。利用可撤销传送交易，如果一方违反了通道条款，违约证明(违约补偿交易)就可以广播到区块链中，资金就会被发送给交易对手方。如果双方都愿意合作，通道可以无限期开放，甚至可以开放很多年。
+
+This type of construction is only possible because adjudication occurs programatically over the blockchain as part of the Bitcoin consensus, so one does not need to trust the other party. As a result, one’s channel counterparty does not possess full custody or control of the funds.
+
+> 建造这种支付通道是可能的，因为通过区块链证明这一切的合约作为比特币共识一部分执行，所以不需要信任另一方。同时，通道对手方并不拥有资金的完全托管或控制权。
