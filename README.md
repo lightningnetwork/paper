@@ -32,3 +32,5 @@ DRAFT  Version 0.5.9.2
 # [2. 微支付通道网络可以解决扩展性问题](docs/chapter2.md)
 
 # [3. 双向支付通道](docs/chapter3.md)
+
+# [4. 哈希时间锁定合约](docs/chapter4.md)
