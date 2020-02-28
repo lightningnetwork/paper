@@ -85,3 +85,50 @@ It is within both parties individual responsibility to ensure that they can get 
 Yet this kind of simplistic construction has similar problems as an incorrect bidirectional payment channel construction. When an old Com- mitment Transaction gets broadcast, either party may attempt to steal funds as both paths may be valid after the fact. For example, if R gets disclosed 1 year later, and an incorrect Commitment Transaction gets broadcast, both paths are valid and are redeemable by either party; the contract is not yet enforcible on the blockchain. Closing out the HTLC is absolutely necessary, because in order for Alice to get her refund, she must terminate the contract and receive her refund. Otherwise, when Bob discovers R after 3 days have elapsed, he may be able to steal the funds which should be going to Alice. With uncooperative counterparties it’s not possible to terminate an HTLC without broadcasting it to the bitcoin blockchain as the uncooperative party is unwilling to create a new Commitment Transaction.
 
 > 然而，这种过于简单的结构存在问题，可能会导致创建错误的双向支付通道。当旧的承诺交易被广播时，任何一方都可能试图窃取资金，因为在事件发生后两条路径都有可能有效。例如，如果R值在一年后被披露，同时广播了一笔恶意的承诺交易，这两条路径就都是有效的，并且任何一方都可以赎回资金。该合约尚未在区块链上强制执行。关闭HTLC是绝对必要的，因为为了让Alice赎回她的资金，她必须终止合约才能收到退款。否则，当3天后Bob披露R时，他可能会偷走本该属于Alice的资金。对于恶意的交易对手，如果不将HTLC广播到区块链上，就无法终止HTLC，因为不合作的一方不愿意创建新的承诺交易。
+
+### 4.2 Off-chain Revocable HTLC
+### 4.2 链下可撤销HTLC
+
+To be able to terminate this contract off-chain without a broadcast to the Bitcoin blockchain requires embedding RSMCs in the output, which will have a similar construction to the bidirectional channel.
+
+> 为了能在不用广播交易到区块链的情况下在链下终止合约，需要在输出中嵌入RSMCs，其结构与双向通道类似。
+
+![Figure12](figures/figure12.png?raw=true "Figure12")
+
+Figure 12:  If Alice broadcasts C2a,  then the left half will execute.  If Bob broadcasts  C2b, then the right half will execute. Either party may broadcast their Commitment transaction at any time. HTLC Timeout is only valid after 3 days. HTLC Executions can only be broadcast if the preimage to the hash R is known. Prior Commitments (and their dependent transactions) are not displayed for brevity.
+
+> 图 12：如果Alice广播C2a，那么左半部分的指令就会执行。如果Bob广播C2b，那么右半部分的指令就会执行。任何一方均可随时公布其承诺交易。HTLC超时时间设定为3天内有效。HTLC只有在体统原像R的哈希值的时候才能执行。为了简单起见，没有画出先前的承诺交易相关部分。
+
+Presume Alice and Bob wish to update their balance in the channel at Commitment 1 with a balance of 0.5 to Alice and 0.5 to Bob.
+Alice wishes to send 0.1 to Bob contingent upon knowledge of R within 3 days, after 3 days she wants her money back if Bob does not produce R.
+
+> 假设Alice和Bob在前一笔承诺交易更新通道中的余额为各自拥有0.5BTC，现在Alice想要在3天内发送0.1BTC给Bob，如果Bob能提供原像R值的话。3天后，如果Bob不能提供R，那么Alice就要收回她的付款。
+
+The new Commitment Transaction will have a full refund of the cur-
+rent balance to Alice and Bob (Outputs 0 and 1), with output 2 being the HTLC, which describes the funds in transit. As 0.1 will be encumbered in an HTLC, Alice’s balance is reduced to 0.4 and Bob’s remains the same at 0.5.
+
+> 新创建的承诺交易将会重新分配资金给Alice和Bob(输出0和输出1)，输出2是一个HTLC，用于表示转送中的资金。由于HTLC需要注入0.1BTC，那么Alice的余额将减少到0.4BTC，Bob的余额保持不变。
+
+This new Commitment Transaction (C2a/C2b) will have an HTLC output with two possible spends. Each spend is different depending on each counterparty’s version of the Commitment Transaction. Similar to the bidirectional payment channel, when one party broadcasts their Commit- ment, payments to the counterparty will be assumed to be valid and not invalidated. This can occur because when one broadcasts a Commitment Transaction, one is attesting this is the most recent Commitment Transac- tion. If it is the most recent, then one is also attesting that the HTLC exists and was not invalidated before, so potential payments to one’s counterparty should be valid.
+
+> 这对新的承诺交易(C2a/C2b)的HTLC输出部分有两种可能的花费方法。每一种花费都因交易对手方的承诺交易版本而异。与双向支付通道类似，当一方广播其承诺交易时，向对方支付的交易会被判定有效或非法。这发生在一方广播承诺交易时，要证明这笔承诺交易是最近的一笔。如果证明是最近的，那么也证明HTLC也是真实存在并一直有效的，所以对另一方的潜在的支付也是有效的。
+
+Note that HTLC transaction names (beginning with the letter H) will begin with the number 1, whose values do not correlate with Commitment Transactions. This is simply the first HTLC transaction. HTLC transac- tions may persist between Commitment Transactions. Each HTLC has 4 keys per side of the transaction (C2a and C2b) for a total of 8 keys per counterparty.
+
+> 注意，HTLC交易名称(以字母H开头)将以数字1开头，其值与承诺交易无关。这只是第一个HTLC交易。HTLC交易可以一直存在于承诺交易当中。每个HTLC在承诺交易的每一端(C2a以及C2b)都需要4个密钥，总共需要8个密钥。
+
+The HTLC output in the Commitment Transaction has two sets of keys per counterparty in the output.
+
+> 承诺交易中的HTLC的输出为每个交易方提供两组密钥。
+
+For Alice’s Commitment Transaction (C2a), the HTLC output script requires multisig(PAlice2, PBob2) encumbered by disclosure of R, as well as multisig(PAlice1, PBob1) with no encumbering.
+
+> 比如Alice持有的承诺交易C2a，其HTLC输出脚本需要多签名(PAlice2, PBob2)以及原像R值才能花费，或者多签名(PAlice1, PBob1)。
+
+For Bob’s Commitment Transaction (C2b), the HTLC output script requires multisig(PAlice6, PBob6) encumbered by disclosure of R, as well as multisig(PAlice5, PBob5) with no encumbering.
+
+> 同样的，对于Bob持有的承诺交易C2b，其HTLC输出脚本需要多签名(PAlice6, PBob6)以及原像R值才能花费，或者多签名(PAlice5, PBob5)。
+
+The HTLC output states are different depending upon which Com- mitment Transaction is broadcast.
+
+> 根据广播的承诺交易不同，HTLC的状态也是不同的。
