@@ -243,4 +243,4 @@ It is absolutely necessary for both parties to complete off-chain nova- tion wit
 
 The amount of time flexibility with these offers to novate are depen- dent upon one’s contingent dependencies on the hashlock R. If one estab- lishes a contract that the HTLC must be resolved within 1 day, then if the transaction times out Alice must resolve it by day 4 (3 days plus 1), else Alice risks losing funds.
 
-> 需要多长时间来完成合约取决于对方能在什么时候提供R值。如果一方发布一个HTLC，合约规定必须在1天之内执行，那么如果如果交易超时，Alice必须在4天内处理这个问题(3天加一天)，否则Alice可能会失去她的资金。
+> 需要多长时间来完成合约取决于对方能在什么时候提供R值。如果一方发布一个HTLC，合约规定必须在1天之内执行，那么如果如果交易超时，Alice必须在4天内处理这个问题(3天加1天)，否则Alice可能会失去她的资金。
