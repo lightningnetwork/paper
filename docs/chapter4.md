@@ -132,3 +132,24 @@ For Bob’s Commitment Transaction (C2b), the HTLC output script requires multis
 The HTLC output states are different depending upon which Com- mitment Transaction is broadcast.
 
 > 根据广播的承诺交易不同，HTLC的状态也是不同的。
+
+#### 4.2.1 HTLC when the Sender Broadcasts the Commitment Transaction
+
+#### 4.2.1 当支付方广播承诺交易时的HTLC状态
+
+For the sender (Alice), the “Delivery” transaction is sent as an HTLC Exe- cution Delivery transaction (HED1a), which is not encumbered in an RSMC. It assumes that this HTLC has never been terminated off-chain, as Alice is attesting that the broadcasted Commitment Transaction is the most recent. If Bob can produce the preimage R, he will be able to redeem funds from the HTLC after the Commitment Transaction is broadcast on the blockchain.
+
+> 对于支付方(Alice)来说，”付款”交易作为HTLC 可执行传送交易(HED1a)来发送的，它不受RSMC的约束。它假设此HTLC在链下状态一直有效，因为Alice证明了其承诺交易是最新的。如果Bob可以提供原像R，他就可以在对应的承诺交易广播入链后，从HTLC中赎回资金。
+
+This transaction consumes multisig(PAlice2, PBob2) if Alice broadcasts her Commitment C2a. Only Bob can broadcast HED1a since only Alice gave her signature for HED1a to Bob.
+
+> 如果Alice要广播承诺交易C2a，那么这笔交易需要两个签名(PAlice2, PBob2) 。只有Bob可以广播HED1a，因为Alice把她对HED1a的签名给了Bob。
+
+However, if 3 days have elapsed since forming the  HTLC,  then Alice will be able broadcast a “Timeout” transaction,  the HTLC Time-  out transaction  (HT1a).  This  transaction  is  an  RSMC.  It  consumes  the output multisig(PAlice1, PBob1) without requiring disclosure  of  R  if  Alice broadcasts C2a. This transaction cannot enter into the blockchain until 3 days have elapsed. The output for this transaction is an RSMC  with multisig(PAlice3, PBob3) with relative maturity of 1000 blocks, and multisig(PAlice4, PBob4) with no requirement for  confirmation  maturity. Only Alice can broadcast HT1a since only Bob gave his signature for HT1a to Alice.
+
+> 但是，如果自创建HTLC之后已经过了3天，那么Alice将能够广播一笔”超时”交易，即HTLC超时交易(HT1a)。这是一个RSMC。它不需要披露R值，在Alice广播C2a的时候生效，需要两个签名(PAlice1, PBob1) 。这笔交易需要锁定三天才能进入区块链。该交易的输出是一个RSMC，消费它需要两个签名(PAlice3, PBob3)，并且等待1000个区块的成熟时间；相对的使用签名(PAlice4, PBob4)消费这笔输出就不需要等待1000个区块的成熟确认时间了。只有Alice可以广播HT1a，因为只有Bob给了Alice HT1a的签名。
+
+After HT1a enters into the blockchain and 1000 block confirmations occur, an HTLC Timeout Revocable  Delivery  transaction  (HTRD1a)  may  be  broadcast  by  Alice  which   consumes   multisig(PAlice3, PBob3). Only Alice can broadcast HTRD1a 1000 blocks after HT1a is broadcast since only Bob gave his signature for HTRD1a  to  Alice.  This  trans- action can be revocable when another transaction supersedes HTRD1a using multisig(PAlice4, PBob4) which does not have any block maturity requirements.
+
+> 在HT1a进入区块链并经过1000个区块确认之后，Alice就可以使用签名(PAlice3, PBob3)签署HTLC超时可撤销传送交易(HTRD1a)并广播了。只有Alice才能在HT1a在经过1000个区块成熟之后广播HTRD1a，因为Bob已经将他对HTRD1a的签名交给了Alice。这笔交易是可撤销的，因为当另一笔没有区块成熟度要丢的交易使用(PAlice4, PBob4)签名并取代HTRD1a时，就可以撤销此操作。
+
