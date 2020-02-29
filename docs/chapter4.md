@@ -168,3 +168,47 @@ After HE1b enters into the blockchain and 1000 block confirmations occur, an HTL
 
 > 在HE1b进入区块链并经过1000个区块确认之后，Bob就可以使用签名(PAlice7, PBob7)签署HTLC执行可撤销传送交易(HTRD1a)并广播了。只有ABOb才能在HE1b在经过1000个区块成熟之后广播HERD1b，因为Alice已经将她对HERD1b的签名交给了Bob。这笔交易是可撤销的，因为当另一笔不需要区块成熟度约束的交易使用(PAlice8, PBob8)签名并取代HERD1b时，就可以撤销此操作。
 
+
+### 4.3 HTLC Off-chain Termination
+
+### 4.3 链下终止HTLC
+
+After an HTLC is constructed, to terminate an HTLC off-chain requires both parties to agree on the state of the channel. If the recipient can prove knowledge of R to the counterparty, the recipient is proving that they are able to immediately close out the channel on the Bitcoin blockchain and re- ceive the funds. At this point, if both parties wish to keep the channel open, they should terminate the HTLC off-chain and create a new Commitment Transaction reflecting the new balance.
+
+> 构建HTLC后，要想在链下终止HTLC，就需要双方就通道状态达成一致。如果接收方能够向交易对手披露R值，证明接收方有能力立即关闭比特币区块链上的通道并接收资金。此时，如果双方希望保持通道继续使用，就应该链下终止HTLC，并创建一笔新的承诺交易反映当前通道内资金分配。
+
+![Figure13](figures/figure13.png?raw=true "Figure13")
+
+Figure 13: Since Bob proved to Alice he knows R by telling Alice R, Alice is willing to update the balance with a new Commitment Transaction. The payout will be the same whether C2 or C3 is broadcast at this time.
+
+> 图 13： Bob向Alice披露R值，Alice就愿意用新的承诺交易更新资金分配。无论是广播C2还是C3，此时付款金额都是一样的。
+
+Similarly, if the recipient is not able to prove knowledge of R by disclosing R, both parties should agree to terminate the HTLC and create a new Commitment Transaction with the balance in the HTLC refunded to the sender.
+
+> 相对的，如果接收方无法披露R值，则双方应协商终止HTLC，并创建一笔新的承诺交易，将HTLC中的资金返还给发送方。
+
+If the counterparties cannot come to an agreement or become other- wise unresponsive, they should close out the channel by broadcasting the necessary channel transactions on the Bitcoin blockchain.
+
+> 如果交易对手无法达成协议或者失去响应，他们应该通过在比特币区块链上广播必要的交易关闭通道。
+
+However, if they are cooperative, they can do so by first generat-  ing a new Commitment Transaction with the new balances, then inval- idate the prior Commitment by exchanging Breach Remedy transactions (BR2a/BR2b). Additionally, if they are terminating a particular HTLC, they should also exchange some of their own private keys used in the HTLC transactions.
+
+> 然后，如果他们是协作的，他们可以这样做：首先根据新的资金分配创建一对新的承诺交易，然后通过交换违约补偿交易(BR2a/BR2b)让之前的承诺交易对失效。此外，如果他们终止一个特性的HTLC，他们也应该互相交换一些在HTLC交易中使用的私钥。
+
+For example, Alice wishes to terminate the HTLC, Alice will disclose KAlice1 and KAlice4 to Bob. Correspondingly if Bob wishes to terminate the HTLC, Bob will disclose KBob6 and KBob8  to Alice.  After the private keys  are disclosed to the counterparty, if Alice broadcasts C2a, Bob will be able to take all the funds from the HTLC immediately. If Bob broadcasts C2b, Alice will be able to take all funds from the HTLC immediately. Note that when an HTLC is terminated, the older Commitment Transaction must be revoked as well.
+
+> 例如，Alice想要终止HTLC，她就需要向Bob披露KAlice1 和 KAlice4。如果Bob希望终止HTLC，他就需要向Alice披露KBob6 和 KBob8。把私钥向交易对手披露后，如果Alice广播C2a，Bob将能够立即从HTLC中提取所有资金。如果Bob广播C2b，Alice将能够从HTLC获得所有资金。请注意，当HTLC终止时，也必须撤销较早的承诺交易。
+
+![Figure14](figures/figure13.png?raw=true "Figure14")
+
+Figure 14: A fully revoked Commitment Transaction and terminated HTLC. If either party broadcasts Commitment 2, they will lose all their money to the counterparty. Other commitments (e.g. if Commitment 3 is the current Commitment) are not displayed for brevity.
+
+> 图14: 终止HTLC以及全部撤销的承诺交易。如果任何一方广播承诺2，他们就会失去所有的资金发给对手方。简洁起见，其它的承诺交易(例如，当前的承诺交易3)没有显示在图中。
+
+Since both parties are able to prove the current state to each other, they can come to agreement on the current balance inside the channel. Since they may broadcast the current state on the blockchain, they are able to come to agreement on netting out and terminating the HTLC with a new Commitment Transaction.
+
+> 因为双方都能像对手方证明当前的状态，所以他们可以就通道内的资金分配余额达成一致。因为他们可以随时在区块链上广播当前状态，他们就能达成协议，用新的承诺交易来抵消和终止HTLC。
+
+### 4.4 HTLC Formation and Closing Order
+
+### 4.4 HTLC的构造以及终止次序
