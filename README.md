@@ -35,4 +35,4 @@ DRAFT  Version 0.5.9.2
 
 # [4. 哈希时间锁定合约](docs/chapter4.md)
 
-# [4. 密钥存储](docs/chapter5.md)
+# [5. 密钥存储](docs/chapter5.md)
