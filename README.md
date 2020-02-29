@@ -34,3 +34,5 @@ DRAFT  Version 0.5.9.2
 # [3. 双向支付通道](docs/chapter3.md)
 
 # [4. 哈希时间锁定合约](docs/chapter4.md)
+
+# [4. 密钥存储](docs/chapter5.md)
