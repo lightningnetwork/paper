@@ -212,3 +212,35 @@ Since both parties are able to prove the current state to each other, they can c
 ### 4.4 HTLC Formation and Closing Order
 
 ### 4.4 HTLC的构造以及终止次序
+
+To create a new HTLC, it is the same process as creating a new Commitment Transaction, except the signatures for the HTLC are exchanged before the new Commitment Transaction’s signatures.
+
+> 要创建一个新的HTLC，其过程与创建一对新的承诺交易相同，不同之处在于HTLC的签名是在创建新的承诺交易的签名之前交换的。
+
+To close out an HTLC, the process is as follows (from C2 to C3):
+
+> 关闭一个HTLC的过程如下(状态从C2到C3):
+
+1. Alice signs and sends her signature for RD3b and C3b. At this point Bob can elect to broadcast C3b or C2b (with the HTLC) with the same payout. Bob is willing after receiving C3b to close out C2b.
+
+2. Bob signs and sends his signature for RD3a and C3a, as well as his private keys used for Commitment 2 and the HTLC being terminated; he sends Alice KBobRSMC2, KBob5,  and  KBob8.  At  this  point  Bob should only broadcast C3b and should not broadcast C2b as he will lose all his money if he does so. Bob has fully revoked C2b and the HTLC. Alice is willing after receiving C3a to close out C2b.
+
+3. Alice signs and sends her signature for RD3b and C3b, as well as her private keys used for Commitment 2 and the HTLC being terminated; she sends Bob KAliceRSMC2, KBob1, and KBob4. At this point  neither party should broadcast Commitment 2, if they do so, their funds will be going to the counterparty. The old Commitment and old HTLC are now revoked and fully terminated. Only the new Commitment 3 remains, which does not have an HTLC.
+
+> 1. Alice签署RD3b以及C3b并发送给Bob。此时，Bob既可以广播C2b(包括HTLC)，也可以广播C3b，两者支付的资金是一样的。Bob更愿意构建C3b，作废C2b。
+
+> 2. Bob签署RD3a以及C3a并发送给Alice，以及用于C2和终止HTLC的私钥发送给Alice--即 KBobRSMC2, KBob5,  以及KBob8。此时，Bob应该只广播C3b而不是C2b，因为广播C2b的话，他会损失所有的资金。因此Bob应该完全撤销C2b和HTLC。Alice收到C3a后，也会愿意作废C2a。
+
+> 3. Alice签署RD3b以及C3b并发送给Bob，以及用于C2和终止HTLC的私钥发送给Bob--即KAliceRSMC2, KBob1, and KBob4。此时，任何一方都不应该广播C2，否则他们将丢失自己的资金。旧的承诺交易和旧的HTLC应该被撤销并完全终止。现在只应该保留新的C3，C3是不包含HTLC的。
+
+When the HTLC has been closed, the funds are updated so that the present balance in the channel is what would occur had the HTLC contract been completed and broadcast on the blockchain. Instead, both parties elect to do off-chain novation and update their payments inside the channel.
+
+> 当HTLC被关闭时，支付通道内现有的资金余额分配状态就会根据HTLC合约更新并广播到区块链上。当然，双方也可以选择链下更新，并在通道内更新支付状态。
+
+It is absolutely necessary for both parties to complete off-chain nova- tion within their designated time window. For the receiver (Bob), he must know R and update his balance with Alice within 3 days (or whatever time was selected), else Alice will be able to redeem it within 3 days. For Alice, very soon after her timeout becomes valid, she must novate or broadcast the HTLC Timeout transaction. She must also novate or broadcast the HTLC Timeout Revocable Delivery transaction as soon as it becomes valid. If the counterparty is unwilling to novate or is stalling, then one must broadcast the current channel state, including HTLC transactions) onto the Bitcoin blockchain.
+
+> 对于双方来说，在他们指定的时间窗口内完成链下更新是绝对有必要的。对于接收者(Bob)来说，他必须在3天内(或者双方协定的任意时间窗口)向Alice披露R值来接收资金，否则Alice就会在3天后回收资金。对于Alice来说，当过去这个时间窗口后，她必须马上更新或广播HTLC超时交易。他还必须在HTLC超时可撤销传送交易生效后立即对其进行更新或广播。如果交易对手不愿意更新或者延迟更新，她必须将当前的通道状态(包括HTLC交易)广播到比特币区块链上。
+
+The amount of time flexibility with these offers to novate are depen- dent upon one’s contingent dependencies on the hashlock R. If one estab- lishes a contract that the HTLC must be resolved within 1 day, then if the transaction times out Alice must resolve it by day 4 (3 days plus 1), else Alice risks losing funds.
+
+> 需要多长时间来完成合约取决于对方能在什么时候提供R值。如果一方发布一个HTLC，合约规定必须在1天之内执行，那么如果如果交易超时，Alice必须在4天内处理这个问题(3天加一天)，否则Alice可能会失去她的资金。
