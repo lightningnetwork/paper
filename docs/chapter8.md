@@ -1,4 +1,3 @@
-## 8. The Bitcoin Lightning Network 
 
 ## 8. 比特币闪电网络
 
@@ -21,4 +20,30 @@ The obligation to deliver funds to an end-recipient is achieved through a proces
 Bitcoin Transaction Scripting, a form of what some call an implemen- tation of “Smart Contracts”[19], enables systems without trusted custodial clearinghouses or escrow services.
 
 > 比特币交易脚本就是一些人所说的”智能合约”[19]，它建立了不需要信任第三方清算或托管服务的系统。
+
+### 8.1 Decrementing Timelocks
+
+### 8.1 递减时间锁
+
+Presume Alice wishes to send 0.001 BTC to Dave. She locates a route through Bob and Carol. The transfer path would be Alice to Bob to Carol to Dave.
+
+> 假设Alice想要通过Bob发送给 Dave 0.001BTC。她建立了一条通过Bob和Carol的支付路径。这条路径上的参与者依次是Alice，Bob，Carol，Dave。
+
+![Figure15](figures/figure15.png?raw=true "Figure15")
+
+Figure 15: Payment over the Lightning Network using HTLCs.
+
+> 图15: 利用HTLCs在商店网络上发送支付交易
+
+When Alice sends payment to Dave through Bob and Carol, she re- quests from Dave hash(R) to use for this payment. Alice then counts the amount of hops until the recipient and uses that as the HTLC expiry. In this case, she sets the HTLC expiry at 3 days. Bob then creates an HTLC with Carol with an expiry of 2 days, and Carol does the same with Dave with an expiry of 1 day. Dave is now free to disclose R to Carol, and both parties will likely agree to immediate settlement via novation with a replacement Com- mitment Transaction. This then occurs step-by-step back to Alice. Note that this occurs off-chain, and nothing is broadcast to the blockchain when all parties are cooperative.
+
+> 当Alice通过Bob和Carol向Dave发送支付交易时，她先向Dave发出支付请求，Dave生成R的哈希值交给Alice用作支付交易的验证。然后Alice计算她与Dave之间的支付路径有几跳，根据这个跳数设置HTLC的过期时间。在这个例子里，Alice将HTLC的有效期设置为3天。然后Bob与Carol也创建一个有效期为2天的HTLC，Carol与Dave创建一个有效期为1天的HTLC。现在，Dave可以向Carol披露R值了，双方可能会协商通过承诺交易即时更新结算状态，然后这组操作一步一步到达Alice这里。请注意，这一切都是发生在链下的，当所有参与方都互助协作时，不会向区块链广播任何内容。
+
+![Figure16](figures/figure16.png?raw=true "Figure16")
+
+Figure 16:  Settlement of HTLC, Alice’s funds get sent to Dave.
+
+> 图16: HTLC的结算，Alice发送资金给Dave
+
+Decrementing timelocks are used so that all parties along the path know that the disclosure of R will allow the disclosing party to pull funds, since they will at worst be pulling funds after the date whereby they must receive R. If Dave does not produce R within 1 day to Carol, then Carol will be able to close out the HTLC. If Dave broadcasts R after 1 day, then he will not be able to pull funds from Carol. Carol’s responsibility to Bob occurs on day 2, so Carol will never be responsible for payment to Dave without an ability to pull funds from Bob provided that she updates her transaction with Dave via transmission to the blockchain or via novation.
 
