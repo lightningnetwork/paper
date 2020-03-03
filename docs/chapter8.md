@@ -62,3 +62,11 @@ In the event a party outright disconnects, the counterparty will be re- sponsibl
 Figure 17: Only the non-responsive channels get broadcast on the blockchain, all others are settled off-chain via novation.
 
 > 只有在通道中与失去响应的节点直接相连的对手方才能在区块链上广播，其它所有参与方通过链下更新合约来清算资金。
+
+## 8.2 Payment Amount
+
+## 8.2 支付金额
+
+It is preferable to use a small payment per HTLC. One should not use an extremely high payment, in case the payment does not fully route to its destination. If the payment does not reach its destination and one of the participants along the path is uncooperative, it is possible that the sender must wait until the expiry before receiving a refund. Delivery may be lossy, similar to packets on the internet, but the network cannot outright steal funds in transit. Since transactions don’t hit the blockchain with cooperative channel counterparties, it is recommended to use as small of a payment as possible. A tradeoff exists between locking up transaction fees on each hop versus the desire to use as small a transaction amount as possible (the latter of which may incur higher total fees). Smaller transfers with more intermediaries imply a higher percentage paid as Lightning Network fees to the intermediaries.
+
+> HTLC优先用于小额支付。不宜一次支付太多资金，以防可能没有到收款方的合适的路由路径。如果其中一个参与者不合作，付款没有到达收款方，付款方就必须等待超时结束后才能收回资金。支付的过程可能有损耗，就像互联网传输的丢包一样，但网络中的资金是不会被窃的。如果通道内的对手方顺利合作的话，是不需要把交易广播到区块链上的，这鼓励每笔支付的金额尽可能小一些。要么锁定交易中每一跳的费用，或者尽量构建少量金额的支付交易，这需要权衡(后者可能会导致更高的总费用)。更小的的支付和更多的中间节点意味着使用闪电网络会支付更高比例的交易费给中间人。
