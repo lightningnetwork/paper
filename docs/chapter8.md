@@ -55,7 +55,7 @@ In the event that R gets disclosed to the participants halfway through expiry al
 
 In the event a party outright disconnects, the counterparty will be re- sponsible for broadcasting the current Commitment Transaction state in the channel to the blockchain. Only the failed non-responsive channel state gets closed out on the blockchain, all other channels should continue to update their Commitment Transactions via novation inside the channel. Therefore, counterparty risk for transaction fees are only exposed to direct channel counterparties. If a node along the path decides to become unresponsive, the participants not directly connected to that node suffer only decreased time- value of their funds by not conducting early settlement before the HTLC close.
 
-> 如果有一方完全失去连接，那么其对手方就负责将通道中当前承诺交易的状态广播到区块链。只有失败的无响应的通道状态才能在区块链上关闭，其它的通道应该通过链下更新承诺交易的方法更新通道状态。因此，一个通道中，只有直接通信的对手方才有浪费交易费用的风险。如果整个支付路径中有一个节点失去响应，那么没有直接连接到该节点不会过早结算，而是会等到HTLC光比，这样他们只是承担了损失资金时间价值的风险。
+> 如果有一方完全失去连接，那么其对手方就负责将通道中当前承诺交易的状态广播到区块链。只有失败的无响应的通道状态才能在区块链上关闭，其它的通道应该通过链下更新承诺交易的方法更新通道状态。因此，一个通道中，只有直接通信的对手方才有浪费交易费用的风险。如果整个支付路径中有一个节点失去响应，那么没有直接连接到该节点不会过早结算，而是会等到HTLC关闭，这样他们只是承担了损失资金时间价值的风险。
 
 ![Figure17](figures/figure17.png?raw=true "Figure17")
 
@@ -65,8 +65,29 @@ Figure 17: Only the non-responsive channels get broadcast on the blockchain, all
 
 ## 8.2 Payment Amount
 
-## 8.2 支付金额
+## 8.2 付款金额
 
 It is preferable to use a small payment per HTLC. One should not use an extremely high payment, in case the payment does not fully route to its destination. If the payment does not reach its destination and one of the participants along the path is uncooperative, it is possible that the sender must wait until the expiry before receiving a refund. Delivery may be lossy, similar to packets on the internet, but the network cannot outright steal funds in transit. Since transactions don’t hit the blockchain with cooperative channel counterparties, it is recommended to use as small of a payment as possible. A tradeoff exists between locking up transaction fees on each hop versus the desire to use as small a transaction amount as possible (the latter of which may incur higher total fees). Smaller transfers with more intermediaries imply a higher percentage paid as Lightning Network fees to the intermediaries.
 
-> HTLC优先用于小额支付。不宜一次支付太多资金，以防可能没有到收款方的合适的路由路径。如果其中一个参与者不合作，付款没有到达收款方，付款方就必须等待超时结束后才能收回资金。支付的过程可能有损耗，就像互联网传输的丢包一样，但网络中的资金是不会被窃的。如果通道内的对手方顺利合作的话，是不需要把交易广播到区块链上的，这鼓励每笔支付的金额尽可能小一些。要么锁定交易中每一跳的费用，或者尽量构建少量金额的支付交易，这需要权衡(后者可能会导致更高的总费用)。更小的的支付和更多的中间节点意味着使用闪电网络会支付更高比例的交易费给中间人。
+> HTLC优先用于小额支付。不宜一次支付太多资金，以防可能没有到收款方的合适的路由路径。如果其中一个参与者不合作，付款没有到达收款方，付款方就必须等待超时结束后才能收回资金。支付的过程可能有损耗，就像互联网传输的丢包一样，但网络中的资金是不会被窃的。如果通道内的对手方都顺利合作的话，是不需要把交易广播到区块链上的，这鼓励每笔支付的金额尽可能小一些。要么锁定交易中每一跳的费用，要么尽量构建小额的支付交易，这需要权衡(后者可能会导致更高的总费用)。更小额的的支付和更多的中间节点意味着使用闪电网络会支付更高比例的交易费给中间人。
+
+## 8.3 Clearing Failure and Rerouting
+
+## 8.3 排障以及重新路由
+
+If a transaction fails to reach its final destination, the receiver should send an equal payment to the sender with the same hash, but not disclose R. This will net out the disclosure of the hash for the sender, but may not for the receiver. The receiver, who generated the hash, should discard R and never broadcast it. If one channel along the path cannot be contacted, then the channels may elect to wait until the path expires, which all participants will likely close out the HTLC as unsettled without any payment with a new Commitment Transaction.
+
+> 如果一笔支付没有到达最终的收款方，收款方应该以相同的哈希值嵌入到支付脚本中，但不会披露R值，然后向付款方发送相同的交易。这将抵消付款方发送的HTLC。生成散列的收款方应该废弃R，永远不要披露它。如果整条支付路径上的某一个支付通道失去连接，那么路径上的其它通道需要一直等待直到超时结束，或者其它参与方通过更新承诺交易关闭HTLC。
+
+![Figure18](figures/figure18.png?raw=true "Figure18")
+
+Figure 18: Dave creates a path back to Alice after Alice fails to send funds to Dave, because Carol is uncooperative. The input R from hash(R) is never brodcast by Dave, because Carol did not complete her actions. If R was broadcast, Alice will break-even. Dave, who controls R should never broadcast R because he may not receive funds from Carol, he should let the contracts expire. Alice and Bob have the option to net out and  close the contract early, as well, in this diagram.
+
+> 图18: 因为Carol不合作，导致Alice向Dave支付失败，之后Dave构建了一条反向支付路径。Dave永远不会广播原像R值，因为Carol没有完成她的义务。如果广播了R，那Alice将收支相抵。控制R的Dave应该永远不广播R值，因为他并没有从Carol处收到资金，他应该等待合约过期。在此图中，Alice和Bob也可以选择提前退出并终止合同。
+
+If the refund route is the same as the payment route, and there are no half-signed contracts whereby one party may be able to steal funds, it is possible to outright cancel the transaction by replacing it with a new Com- mitment Transaction starting with the most recent node who participated in the HTLC.
+
+> 如果退款路径与付款路径相同，并且没有半签名合约，那么一方就可能偷窃资金，他可能会通过与HTLC中最近的参与方更新承诺交易来取消这笔交易。
+
+It is also possible to clear out a channel by creating an alternate route path in which payment will occur in the opposite direction (netting out   to zero) and/or creating an entirely alternate route for the payment path. This will create a time-value of money for disclosing inputs to hashes on the Lightning Network. Participants may specialize in high connectivity between nodes and offering to offload contract hashlocks from other nodes for a fee. These participants will agree to payments which net out to zero (plus fees), but are loaning bitcoins for a set time period. Most likely, these entities with low demand for channel resources will be end-users who are already connected to multiple well-connected nodes. When an end-user connects to a node, the node may ask the client to lock up their funds for several days to another channel the client has established for a fee. This can be achieved by having the new transactions require a new hash(Y) from input Y in addition to the existing hash which may be generated by any participant, but must disclose Y only after a full circle is established. The new participant has the same responsibility as well as the same timelocks as the old participant being replaced. It is also possible that the one new participant replaces multiple hops.
+
