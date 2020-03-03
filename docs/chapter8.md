@@ -47,3 +47,18 @@ Figure 16:  Settlement of HTLC, Alice’s funds get sent to Dave.
 
 Decrementing timelocks are used so that all parties along the path know that the disclosure of R will allow the disclosing party to pull funds, since they will at worst be pulling funds after the date whereby they must receive R. If Dave does not produce R within 1 day to Carol, then Carol will be able to close out the HTLC. If Dave broadcasts R after 1 day, then he will not be able to pull funds from Carol. Carol’s responsibility to Bob occurs on day 2, so Carol will never be responsible for payment to Dave without an ability to pull funds from Bob provided that she updates her transaction with Dave via transmission to the blockchain or via novation.
 
+> 支付路径上的各个参与者要想能得到资金，首先需要只要披露R，其次还需要设定递减时间锁，因为作为中转节点转送资金却不知道什么时候才能收到R是最糟糕的情形。如果Dave没有在1天内发送 R给Carol，Carol就有权关闭HTLC。如果Dave一天之后才披露R，那他也不会从Carol那里收到中转资金了。而Carol必须在2天内响应Bob，所以Carol不会付款给Dave，也不能从Bob那里收到款项，除非她能够通过链上或链下合约来更新与Dave之间的交易。
+
+In the event that R gets disclosed to the participants halfway through expiry along the path (e.g. day 2), then it is possible for some parties along the path to be enriched. The sender will be able to know R, so due to Pay to Contract, the payment will have been fulfilled even though the receiver did not receive the funds. Therefore, the receiver must never disclose R unless they have received an HTLC from their channel counterparty; they are guaranteed to receive payment from one of their channel counterparties upon disclosure of the preimage.
+
+> 如果R在支付传递的中途(比如第二天)被披露了，那么路径上的一些参与方可能会遭受损失。如果支付方得到了R，那么根据付款合约，即使接收方还没有收到资金，支付行为就已经完成了。因此，接收方没有在支付通道中收到支付方的 HTLC之前绝对不能披露R值；只有在通道中有了支付合约的保证，才能向这个交易对手方披露R值。
+
+In the event a party outright disconnects, the counterparty will be re- sponsible for broadcasting the current Commitment Transaction state in the channel to the blockchain. Only the failed non-responsive channel state gets closed out on the blockchain, all other channels should continue to update their Commitment Transactions via novation inside the channel. Therefore, counterparty risk for transaction fees are only exposed to direct channel counterparties. If a node along the path decides to become unresponsive, the participants not directly connected to that node suffer only decreased time- value of their funds by not conducting early settlement before the HTLC close.
+
+> 如果有一方完全失去连接，那么其对手方就负责将通道中当前承诺交易的状态广播到区块链。只有失败的无响应的通道状态才能在区块链上关闭，其它的通道应该通过链下更新承诺交易的方法更新通道状态。因此，一个通道中，只有直接通信的对手方才有浪费交易费用的风险。如果整个支付路径中有一个节点失去响应，那么没有直接连接到该节点不会过早结算，而是会等到HTLC光比，这样他们只是承担了损失资金时间价值的风险。
+
+![Figure17](figures/figure17.png?raw=true "Figure17")
+
+Figure 17: Only the non-responsive channels get broadcast on the blockchain, all others are settled off-chain via novation.
+
+> 只有在通道中与失去响应的节点直接相连的对手方才能在区块链上广播，其它所有参与方通过链下更新合约来清算资金。
