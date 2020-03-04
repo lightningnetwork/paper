@@ -40,3 +40,5 @@ DRAFT  Version 0.5.9.2
 # [6. 双向支付通道中的链上交易费用](docs/chapter6.md)
 
 # [7. 向合约支付](docs/chapter7.md)
+
+# [8. 比特币闪电网络](docs/chapter8.md)
