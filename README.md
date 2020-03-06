@@ -53,6 +53,8 @@ DRAFT  Version 0.5.9.2
 
 # [13. 致谢](docs/chapter13.md)
 
+# [附录A](docs/appendixa.md)
+
 # [引用](docs/refences.md)
 
 # [术语表](docs/glossary.md)
