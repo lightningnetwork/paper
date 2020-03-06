@@ -52,3 +52,7 @@ DRAFT  Version 0.5.9.2
 # [12. 结论](docs/chapter12.md)
 
 # [13. 致谢](docs/chapter13.md)
+
+# [引用](docs/refences.md)
+
+# [术语表](docs/glossary.md)
