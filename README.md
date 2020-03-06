@@ -48,3 +48,7 @@ DRAFT  Version 0.5.9.2
 # [10. 区块大小与共识](docs/chapter10.md)
 
 # [11. 使用场景](docs/chapter11.md)
+
+# [12. 结论](docs/chapter12.md)
+
+# [13. 致谢](docs/chapter13.md)
