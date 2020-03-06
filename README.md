@@ -55,6 +55,6 @@ DRAFT  Version 0.5.9.2
 
 # [附录A](docs/appendixa.md)
 
-# [引用](docs/refences.md)
+# [引用](docs/references.md)
 
 # [术语表](docs/glossary.md)
