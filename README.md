@@ -42,3 +42,19 @@ DRAFT  Version 0.5.9.2
 # [7. 向合约支付](docs/chapter7.md)
 
 # [8. 比特币闪电网络](docs/chapter8.md)
+
+# [9. 风险](docs/chapter9.md)
+
+# [10. 区块大小与共识](docs/chapter10.md)
+
+# [11. 使用场景](docs/chapter11.md)
+
+# [12. 结论](docs/chapter12.md)
+
+# [13. 致谢](docs/chapter13.md)
+
+# [附录A](docs/appendixa.md)
+
+# [引用](docs/refences.md)
+
+# [术语表](docs/glossary.md)
