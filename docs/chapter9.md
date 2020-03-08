@@ -32,7 +32,7 @@ Additionally, one may attempt to steal HTLC transactions by forcing a timeout tr
 
 If this type of transaction becomes the dominant form of transactions which are included on the blockchain, it may become necessary to increase the block size and run a variable blocksize structure and timestop flags   as described in the section below. This can create sufficient penalties and disincentives to be highly unprofitable and unsuccessful for attackers, as attackers lose all their funds from broadcasting the wrong transaction, to the point where it will never occur.
 
-> 如果这种交易类型成为区块链上的主要交易形式，那么可能需要增加块大小并运行要给可变区块大小的结构和timestop标识，这会在下个章节详述。这可能会产生足够的惩罚和一直措施，让攻击者很难攻击成功并无利可图，因为攻击者一旦广播他们的恶意交易就会损失所有资金，最后这种攻击行为就会慢慢消失了。
+> 如果这种交易类型成为区块链上的主要交易形式，那么可能需要增加块大小并运行要给可变区块大小的结构和timestop标识，这会在下个章节详述。这可能会产生足够的惩罚和抑制措施，让攻击者很难攻击成功并无利可图，因为攻击者一旦广播他们的恶意交易就会损失所有资金，最后这种攻击行为就会慢慢消失了。
 
 
 ### 9.3 Coin Theft via Cracking
@@ -61,7 +61,7 @@ When one party loses data, it is possible for the counterparty to steal funds. T
 
 If one does not broadcast a transaction at the correct time, the counterparty may steal funds. This can be mitigated by having a designated third party to send funds. An output fee can be added to create an incentive for this third party to watch the network. Further, this can also be mitigated by implementing OP CHECKSEQUENCEVERIFY.
 
-> 如果没有在正确的时间广播交易，交易对手可能会窃取资金。这可以通过在发送资金的时候指定第三方监控服务来辅助。可以增加输出费用来鼓励第三方监控网络。此外，还可以通过实现OP CHECKSEQUENCEVERIFY来缓解这种情况。
+> 如果没有在正确的时间广播交易，交易对手可能会窃取资金。这可以通过在发送资金的时候指定第三方监控服务来辅助。可以增加输出费用来鼓励第三方监控网络。此外，还可以通过实现OP_CHECKSEQUENCEVERIFY来缓解这种情况。
 
 ### 9.6 Inability to Make Necessary Soft-Forks
 
@@ -69,7 +69,7 @@ If one does not broadcast a transaction at the correct time, the counterparty ma
 
 Changes are necessary to bitcoin, such as the malleability soft-fork. Addi- tionally, if this system becomes popular, it will be necessary for the system to securely transact with many users and some kind of structure like a blockheight timestop will be desirable. This system assumes such changes to enable Lightning Network to exist entirely, as well as soft-forks ensuring the security is robust against attackers will occur. While the system may continue to operate with only some time lock and malleability soft-forks, there will be necessary soft-forks regarding systemic risks. Without proper community foresight, an inability to establish a timestop or similar func- tion will allow systemic attacks to take place and may not be recognized as imperative until an attack actually occurs.
 
-> 实现这个系统需要改进比特币系统，比如需要实施软分叉解决交易延展性的问题。另外，如果要普及这个系统，需要一些必要条件，它必须确保许多用户间能安全的进行交易，并且构建一种数据结构存储timestop标识来衡量区块高度。这个软分叉希望能完全建立闪电网络基础设施，同时确保即使受到攻击也能保持健壮性和安全性。如果软分叉只加入时间锁以及解决交易延展性问题，虽然系统可能继续运行，但将来可能会围绕软分叉出现系统性风险。如果社区不能长远考虑，没有引入类似时间锁的功能，可能遭受系统攻击，到时候城池已破悔之晚矣。
+> 实现这个系统需要改进比特币系统，比如需要实施软分叉解决交易延展性的问题。另外，如果要普及这个系统，需要一些必要条件，它必须确保许多用户间能安全的进行交易，并且构建一种数据结构存储timestop标识来衡量区块高度。这个软分叉希望能完全建立闪电网络基础设施，同时确保即使受到攻击也能保持健壮性和安全性。如果软分叉只加入时间锁以及解决交易延展性问题，虽然系统可能继续运行，但将来可能会围绕软分叉出现系统性风险。如果社区不能长远考虑，没有引入类似时间锁的功能，可能遭受系统攻击，到时候再补救就麻烦了。
 
 ### 9.7 Colluding Miner Attacks
 
@@ -86,4 +86,3 @@ This can be mitigated by encouraging miners to avoid identifying their own block
 The risk model of this attack occurirng is similar to that of miners colluding to do reorg attacks: Extremely unlikely with many uncoordinated miners.
 
 > 这种攻击发生的风险模型类似于矿工串谋进行重组攻击，在矿工都是自私自利的条件下很难发生。
-

@@ -28,13 +28,13 @@ Like the age-old question of whether the tree falling in the woods makes a sound
 
 > 就像那个古老的问题：“树在森林中倒下，是否真正发出了声音”一样，如果所有人都认为树是在下午2:45倒下的，那么树就是在下午2:45倒下的。类似的，如果交易双方，Alice和Bob都同意通道内的当前余额是Alice拥有0.07BTC，Bob拥有0.03BTC，那么真实账目就是如此。然而，如果没有密码学的保证，就会产生一个有趣的问题：如果交易对手不同意当前的账目余额(或说是树倒下的时间)，那么双方就产生了分歧。而没有加密的签名，区块链就无法判断真正的账目到底是怎么样的。
 
-If the balance in the channel is 0.05 BTC to Alice and 0.05 BTC to Bob, and the balance after a transaction is 0.07 BTC to Alice and 0.03 BTC to Bob, the network needs to know which set of balances is correct. Blockchain transactions solve this problem by using the blockchain ledger as a timestamping system. At the same time, it is desirable to create a sys- tem which does not actively use this timestamping system unless absolutely necessary, as it can become costly to the network.
+If the balance in the channel is 0.05 BTC to Alice and 0.05 BTC to Bob, and the balance after a transaction is 0.07 BTC to Alice and 0.03 BTC to Bob, the network needs to know which set of balances is correct. Blockchain transactions solve this problem by using the blockchain ledger as a timestamping system. At the same time, it is desirable to create a system which does not actively use this timestamping system unless absolutely necessary, as it can become costly to the network.
 
-> 如果通道中最初的状态是Alice拥有0.05BTC，Bob拥有0.05BTC，他们交易一次之后，变成Alice拥有0.07BTC，Bob拥有0.03BTC，那么网络就需要判断两人哪一组余额是正确的。链上交易通过区块链总账的时间戳系统解决了这个问题。相对的，我们想要建立这样一个系统：该系统除非是绝对必要的时候才使用区块链的时间戳，因为创建时间戳会增加网络的成本。
+> 如果通道中最初的状态是Alice拥有0.05BTC，Bob拥有0.05BTC，他们交易一次之后，变成Alice拥有0.07BTC，Bob拥有0.03BTC，那么网络就需要判断两人哪一组余额是正确的。链上交易通过区块链总账的时间戳系统解决了这个问题。相对的，我们想要建立这样一个系统：该系统除非是绝对必要的时候才使用区块链作为时间戳证明，因为这会增加网络的成本。
 
 Instead, both parties can commit to signing a transaction and not broadcasting this transaction. So if Alice and Bob commit funds into a 2- of-2 multisignature address (where it requires consent from both parties to create spends), they can agree on the current balance state. Alice and Bob can agree to create a refund from that 2-of-2 transaction to themselves, 0.05 BTC to each. This refund is not broadcast on the blockchain. Either party may do so, but they may elect to instead hold onto that transaction, knowing that they are able to redeem funds whenever they feel comfortable doing so. By deferring broadcast of this transaction, they may elect to change this balance at a future date.
 
-> 相反，双方可以承诺签订一笔交易，这笔交易不用立即广播。如果Alice和Bob将资金存入一个2/2的多重签名地址(交易所需的手续费用需要双方的同意)，他们可以就当前的账户余额达成一致。Alice和Bob需要进行协商，从这个2/2交易中各自为自己创建一笔赎回交易，各自收回0.05BTC，赎回交易不会广播，但任何一方都能够随时广播它。他们之所以继续持有这笔保证金交易，因为他们知道，只要他们愿意，随时都可以赎回资金。通过延迟广播赎回交易，他们可以在未来继续交易改变账户余额。
+> 相反，双方可以承诺签订一笔交易，这笔交易不用立即广播。如果Alice和Bob将资金存入一个2/2的多重签名地址(交易所需的手续费用需要双方的同意)，他们可以就当前的账户余额达成一致。Alice和Bob需要进行协商，从这个2/2多重签名交易中各自为自己创建一笔赎回交易，各自收回0.05BTC，赎回交易不会广播，但任何一方都能够随时广播它。他们之所以继续持有这笔保证金交易，因为他们知道，只要他们愿意，随时都可以赎回资金。通过延迟广播赎回交易，他们可以在未来继续交易改变账户余额。
 
 To update the balance, both parties create a new spend from the 2-of-2 multisignature address, for example 0.07 to Alice and 0.03 to Bob. Without proper design, though, there is the timestamping problem of not knowing which spend is correct: the new spend or the original refund.
 
@@ -50,7 +50,7 @@ Therefore, it is possible in bitcoin to devise a bitcoin script whereby all old 
 
 This invalidation process can exist through a process of channel con- sensus where if both parties agree on current ledger states (and building new states), then the real balance gets updated. The balance is reflected on the blockchain only when a single party disagrees. Conceptually, this system is not an independent overlay network; it is more a deferral of state on the current system, as the enforcement is still occurring on the blockchain itself (albeit deferred to future dates and transactions).
 
-> 这个作废旧有交易的过程通过通道双发的共识来保证：当账户余额发生变化时，双方都同意当前的账本状态(并且每次更新账本时都能达成新的共识)。只有当一方不同意当前状态时，交易才会广播上链解决纠纷。从概念上讲，该系统不是一个独立的叠加网络，它更像是当前系统的延迟状态，因为最终账户余额会广播到区块链上去(尽管这个过程和相关交易广播会推迟到未来某个时间)。
+> 这个作废旧有交易的过程通过通道双方的共识来保证：当账户余额发生变化时，双方都同意当前的账本状态(并且每次更新账本时都能达成新的共识)。只有当一方不同意当前状态时，交易才会广播上链解决纠纷。从概念上讲，该系统不是一个独立的叠加网络，它更像是当前系统的延迟状态，因为最终账户余额会广播到区块链上去(尽管这个过程和相关交易广播会推迟到未来某个时间)。
 
 
 ## 2.2 A Network of Channels 

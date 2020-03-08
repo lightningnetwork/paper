@@ -16,7 +16,7 @@ In addition to helping bitcoin scale, there are many uses for transactions on th
 
 • Micropayments. Bitcoin blockchain fees are far too high to accept micropayments, especially with the smallest of values. With this sys- tem, near-instant micropayments using Bitcoin without a 3rd party custodian would be possible. It would enable, for example, paying per-megabyte for internet service or per-article to read a newspaper.
 
-> • 小额支付。比特币区块链的手续费用太高，不适合小额支付，尤其是那些金额非常小的支付。有了闪电网络，不需要三方托管，就能使用比特币进行近乎即时的微支付。例如，它将支持这样的服务--按照MB对互联网流量收费，以及每阅读一篇文章付一次费用。
+> • 小额支付。比特币区块链的手续费用太高，不适合小额支付，尤其是那些金额非常小的支付。有了闪电网络，不需要三方托管，就能使用比特币进行近乎即时的微支付。例如，它将支持这样的服务--按照兆字节对互联网流量收费，以及每阅读一篇文章就付一次费用。
 
 • Financial Smart Contracts and Escrow. Financial contracts are espe- cially time-sensitive and have higher demands on blockchain computa- tion. By moving the overwhelming majority of trustless transactions off-chain, it is possible to have highly complex transaction contract terms without ever hitting the blockchain.
 
@@ -24,6 +24,6 @@ In addition to helping bitcoin scale, there are many uses for transactions on th
 
 • Cross-Chain Payments. So long as there are similar hash-functions across chains, it’s possible for transactions to be routed over multi- ple chains with different consensus rules. The sender does not have to trust or even know about the other chains – even the destination chain. Simiarly, the receiver does not have to know anything about the sender’s chain or any  other chain.  All the receiver cares about  is a conditional payment upon knowledge of a secret on their chain. Payment can be routed by participants in both chains in the hop. E.g. Alice is on Bitcoin, Bob is on both Bitcoin and X-Coin and Carol is on a hypothetical X-Coin, Alice can pay Carol without understanding the X-Coin consensus rules.
 
-> 跨链交易。这要链之间存在类似的哈希函数，就可以可能将交易路由到具有不同共识规则的多条链上。发送方不必信任市值不用了解其它的链--甚至是发送的目的链。同样，接收者不需要直到发送者的链或任何其它链的信息。接收者所关心的只是一笔合约付款，他们只要在资金所在的链解开合约即可。
+> 跨链交易。这要链之间存在类似的哈希函数，就可以可能将交易路由到具有不同共识规则的多条链上。发送方不必信任甚至不用了解其它的链--甚至是发送的目的链。同样，接收者不需要了解发送者的链或任何其它链的信息。接收者所关心的只是一笔合约付款，他们只要在资金所在的链解开合约即可。
 
 > 支付交易可以在两条链上路由。例如，Alice使用比特币，Bob同时使用比特币和X币，Carol使用X币，Alice可以在不了解X币共识规则的情况下支付给Carol。

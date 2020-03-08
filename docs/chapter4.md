@@ -91,7 +91,7 @@ Yet this kind of simplistic construction has similar problems as an incorrect bi
 
 To be able to terminate this contract off-chain without a broadcast to the Bitcoin blockchain requires embedding RSMCs in the output, which will have a similar construction to the bidirectional channel.
 
-> 为了能在不用广播交易到区块链的情况下在链下终止合约，需要在输出中嵌入RSMCs，其结构与双向通道类似。
+> 为了不用广播交易到区块链就能在链下终止合约，需要在输出中嵌入RSMCs，其结构与双向通道类似。
 
 ![Figure12](figures/figure12.png?raw=true "Figure12")
 
@@ -151,7 +151,7 @@ However, if 3 days have elapsed since forming the  HTLC,  then Alice will be abl
 
 After HT1a enters into the blockchain and 1000 block confirmations occur, an HTLC Timeout Revocable  Delivery  transaction  (HTRD1a)  may  be  broadcast  by  Alice  which   consumes   multisig(PAlice3, PBob3). Only Alice can broadcast HTRD1a 1000 blocks after HT1a is broadcast since only Bob gave his signature for HTRD1a  to  Alice.  This  trans- action can be revocable when another transaction supersedes HTRD1a using multisig(PAlice4, PBob4) which does not have any block maturity requirements.
 
-> 在HT1a进入区块链并经过1000个区块确认之后，Alice就可以使用签名(PAlice3, PBob3)签署HTLC超时可撤销传送交易(HTRD1a)并广播了。只有Alice才能在HT1a在经过1000个区块成熟之后广播HTRD1a，因为Bob已经将他对HTRD1a的签名交给了Alice。这笔交易是可撤销的，因为当另一笔没有区块成熟度要丢的交易使用(PAlice4, PBob4)签名并取代HTRD1a时，就可以撤销此操作。
+> 在HT1a进入区块链并经过1000个区块确认之后，Alice就可以使用签名(PAlice3, PBob3)签署HTLC超时可撤销传送交易(HTRD1a)并广播了。只有Alice才能在HT1a在经过1000个区块成熟之后广播HTRD1a，因为Bob已经将他对HTRD1a的签名交给了Alice。这笔交易是可撤销的，因为当另一笔没有区块成熟度要求的交易使用(PAlice4, PBob4)签名并取代HTRD1a时，就可以撤销此操作。
 
 #### 4.2.2 HTLC when the Receiver Broadcasts the Commitment Transaction
 #### 4.2.2 接收方广播承诺交易时的HTLC状态
@@ -193,7 +193,7 @@ If the counterparties cannot come to an agreement or become other- wise unrespon
 
 However, if they are cooperative, they can do so by first generat-  ing a new Commitment Transaction with the new balances, then inval- idate the prior Commitment by exchanging Breach Remedy transactions (BR2a/BR2b). Additionally, if they are terminating a particular HTLC, they should also exchange some of their own private keys used in the HTLC transactions.
 
-> 然后，如果他们是协作的，他们可以这样做：首先根据新的资金分配创建一对新的承诺交易，然后通过交换违约补偿交易(BR2a/BR2b)让之前的承诺交易对失效。此外，如果他们终止一个特性的HTLC，他们也应该互相交换一些在HTLC交易中使用的私钥。
+> 然后，如果他们是协作的，他们可以这样做：首先根据新的资金分配创建一对新的承诺交易，然后通过交换违约补偿交易(BR2a/BR2b)让之前的承诺交易对失效。此外，如果他们终止一个特定的HTLC，他们也应该互相交换在HTLC交易中使用的部分私钥。
 
 For example, Alice wishes to terminate the HTLC, Alice will disclose KAlice1 and KAlice4 to Bob. Correspondingly if Bob wishes to terminate the HTLC, Bob will disclose KBob6 and KBob8  to Alice.  After the private keys  are disclosed to the counterparty, if Alice broadcasts C2a, Bob will be able to take all the funds from the HTLC immediately. If Bob broadcasts C2b, Alice will be able to take all funds from the HTLC immediately. Note that when an HTLC is terminated, the older Commitment Transaction must be revoked as well.
 
@@ -207,7 +207,7 @@ Figure 14: A fully revoked Commitment Transaction and terminated HTLC. If either
 
 Since both parties are able to prove the current state to each other, they can come to agreement on the current balance inside the channel. Since they may broadcast the current state on the blockchain, they are able to come to agreement on netting out and terminating the HTLC with a new Commitment Transaction.
 
-> 因为双方都能像对手方证明当前的状态，所以他们可以就通道内的资金分配余额达成一致。因为他们可以随时在区块链上广播当前状态，他们就能达成协议，用新的承诺交易来抵消和终止HTLC。
+> 因为双方都能向对手方证明当前的状态，所以他们可以就通道内的资金分配余额达成一致。因为他们可以随时在区块链上广播当前状态，他们就能达成协议，用新的承诺交易来抵消和终止HTLC。
 
 ### 4.4 HTLC Formation and Closing Order
 
