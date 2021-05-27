@@ -40,7 +40,7 @@ Once a market has been cleared, the batch execution phase begins. During this ph
 
 We begin by introducing the concept of a Liquidity Taker:
 
-### Deﬁnition 4.1. (Liquidity Taker). 
+### Deﬁnition 4.1. (Liquidity Taker).
 
 A Liquidity Taker is an agent in a Channel Liquidity Market seeking to obtain new inbound channel liquidity of size Asat for a period of Tblock Bitcoin blocks.
 
@@ -62,7 +62,7 @@ The proﬁt (α) earned by a Liquidity Maker takes two forms:
 
 We argue that the existence of such Channel Liquidity Markets will increase the eﬃciency of capital deployed to a payment channel network by allowing agents to signal the relative demand of lifted coins compared to non-lifted coins. Additionally, such markets also allow an existing routing node on the network to re-allocate lifted coins from a low-velocity section of the sub-graph, to one of higher velocity:
 
-### Theorem 4.1 (Channel velocity revenue). 
+### Theorem 4.1 (Channel velocity revenue).
 
 Holding all channel liquidity equal, channels allocated to a higher velocity section of the sub-graph will yield a higher Fc than channel allocated to a low-velocity section of the sub-graph.
 
@@ -119,3 +119,43 @@ These accounts in the abstract may take many forms, but as we focus on Bitcoin, 
 ### 4.4 Order Structure & Veriﬁcation
 
 With our channel lease contract and account structure deﬁned, we now move on to our order structure. As with any auction, orders are how the agents express their preferences with respect to what they wish to buy and sell. Importantly,  all orders within the market must be backed by a valid non-expired account, and must carry an authentication tag which prevents order spooﬁng, and also ensures proper integrity of a given order once it has been submitted.
+
+#### Order Structure
+
+We deﬁne an Order within the context of a CLM as follows:
+
+### Deﬁnition 4.5. (Order). An Order is a authenticated n-tuple:
+
+![Figure4_5](figures/figure4_5.png?raw=true "Figure4_5")
+
+❼ Vver is the version of this order. As we’ll see below, the version is used as an upgrade mechanism, and is needed in order to parse any newly added ﬁelds, as well as compute the digest required to check the authentication tag attached to an order.
+
+❼ Pacct is the public key that uniquely identiﬁes this account.
+
+❼ The set of base order details is:
+
+    ∆base = 2αrate, Asat, Mpub, Lpub, Aaddr, Ctype, Dblocks, Fchain|, where:
+
+    – αrate is the desired per-block rate that the owner of the order wishes to buy or sell a channel lease at. Further below, this may be referred to as the BPY or block percentage yield.
+
+    - Asat is the total contract size expressed in lease units. Restricting orders to whole units simpliﬁes preference matching within the sys- tem.
+
+    - Mpub is the multi-sig public key to be used when creating the funding output of the channel.
+
+    - Lpub is the identity public key of the Lightning Node that wishes to buy/sell this channel.
+
+    – Aaddr is the network address to be used to connect to the backing
+
+Lpub to initiate the channel funding process if this order is matched.
+
+    – Ctype is the type of channel to be created if this order is matched.
+
+    – Dblocks is the target lease duration of the contract.
+
+    – Fchain.iz   is the max chain fee expressed in sat/vbyte that the owner of said order is willing to pay within a batch.
+
+❼ The set of auxiliary details is implicitly deﬁned by the order version Vver.
+
+❼ Tauth is an authentication tag that allows the auctioneer, and other traders to validate the integrity and authenticity of the order.
+
+An order allows a Liquidity Taker or a Liquidity Maker to express their preference with respect to what type of channel lease they’re looking to buy or sell.
