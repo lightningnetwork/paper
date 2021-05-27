@@ -134,7 +134,7 @@ We deﬁne an Order within the context of a CLM as follows:
 
 ❼ The set of base order details is:
 
-    ∆base = 2αrate, Asat, Mpub, Lpub, Aaddr, Ctype, Dblocks, Fchain|, where:
+![Figure4_6](figures/figure4_6.png?raw=true "Figure4_6")
 
     – αrate is the desired per-block rate that the owner of the order wishes to buy or sell a channel lease at. Further below, this may be referred to as the BPY or block percentage yield.
 
@@ -159,3 +159,90 @@ Lpub to initiate the channel funding process if this order is matched.
 ❼ Tauth is an authentication tag that allows the auctioneer, and other traders to validate the integrity and authenticity of the order.
 
 An order allows a Liquidity Taker or a Liquidity Maker to express their preference with respect to what type of channel lease they’re looking to buy or sell.
+
+#### Order Validation
+
+Returning back to our tag Tauth,  we  will now specify how such a tag is to be computed, and veriﬁed. In the abstract, we require that the tagging scheme is SUF-CMA secure. Given this security requirement, we deﬁne two polynomial-time algorithms: (GenOrderTag, VerifyOrderTag) with the follow- ing requirements:
+
+❼ GenOrderTag(Pacctopmu ,Θ) Tauth. Given an input of the private key that corresponds to the public key of an account, and the complete order details, a valid tag Tauth is generated.
+
+❼ VerifyOrderTag(Pacct,Θ, Tauth) b. Given a public key of an account holder, a valid tag, and the order itself, VerifyOrderTag outputs b = 1 if the tag is valid.
+
+As we use a public-key based tagging technique,  the validity  of an order  is veriﬁable by any other active trader within the marketplace including the auctioneer of the marketplace.
+
+## 4.5 Auction Design
+
+In this section, we describe the abstract deﬁnition of a Channel Liquidity Marketplace, which addresses each of the issues presented in the bootstrapping section of the background, by creating a new form of batched auction which allows Liquidity Takers and Liquidity Makers to buy and sell Lightning Channel Leases in a non-custodial manner.
+
+### 4.5.1   Auction Speciﬁcation
+
+We’ll now specify the behavior and requirements of an using abstract Channel Liquidity Marketplace instance. We deﬁne the expected behavior and the client-facing interface of a CLM instance. A CLM is a tuple of polynomial-time algorithms divided into ﬁve distinct but related categories:
+
+❼ System Initialization: SystemInit
+
+❼ Account Operations: (NewAccount, ModifyAccount)
+
+❼ Order Book Maintenance: (SubmitOrder, CancelOrder)
+
+❼ Market Clearing: (MatchMake, MarketClearingPrice, ClearMarket)
+
+❼ Batch Execution: (ConstructBatch, ExecuteBatch) With behavior and semantics as expressed below.
+
+#### System Initialization
+
+Before the marketplace can be used, we require it to be initialized by the auctioneer. This initialization is a one-time process, and doesn’t result in any trapdoor or ”toxic waste” material being produced:
+
+SystemInit(1λ, Υmin) ≥ (Pauction , Pauction , ΨA). Denoting the security parameter as λ, the SystemInit algorithm takes as input the security parameter, and the batch interval Υmin expressed in minutes, and outputs a public (Pauctiono ) and private (Pauctions ) key pair for the auctioneer. The auctioneer’s public key will be used as a parameter in algorithms related to account creation, modiﬁcation, and batch execution. This algorithm also returns ΨA, which is a special account owned by the auctioneer that will be used to collect fees, and during batch construction.
+
+#### Account Operations
+
+In order to create an account, agents will need to interact with the auctioneer itself. After account creation, an account can be modiﬁed freely (close, deposit, withdraw, etc.) if the account isn’t part of an active batch:
+
+NewAccount(1λ, Pauction ) Ψ. The NewAccount algorithm takes as input our security parameter, and the auctioneer’s public key, and outputs a new ac- count for the new agent within the marketplace. We require that all resulting accounts within the marketplace be unique. We permit a single logical agent to have multiple accounts.
+
+ModifyAccount(Ψ, Pauctiono )    (b, Ψ/). The ModifyAccount algorithm takes an existing valid account Ψ and the auctioneer’s public key and performs an account modiﬁcation. The algorithm returns b = 1 if the modiﬁcation was suc- cessful, and b = 0 otherwise. An account modiﬁcation may fail if the target account is already part of a pending batch. An account modiﬁcation can either:
+
+❼ Deposit new coins into the account.
+
+❼ Withdraw coins from the account.
+
+❼ Close the account by removing all coins from the account.
+
+Note that as each of these operations requires an on-chain transaction, they can be freely batched with other on-chain transactions, or even the batch trans- action that executes an auction.
+
+#### Order Book Maintenance
+
+Once accounts in the marketplace are open, agents are able to submit orders between batch epochs. The size of all orders is expressed in units, and as we mention below, we permit partial matches of an order. A partial match can either update the order state in place, or require that the agent re-submit a new valid tag for the modiﬁed order in the batch execution phase:
+
+SubmitOrder(Θ, Tauth) ≥ b. The SubmitOrder algorithm takes as input a structurally sound order Θ, and its authentication tag Tauth and outputs a bit
+b.  The bit b = 1 if the order is valid according to market place rules, and the
+VerifyOrderTag returns b = 1 given the speciﬁed parameters.
+
+CancelOrder(Θ, Kn/ once)b.  The CancelOrder given an existing order Θ and  the  opening  of  the  Knonce  commitment  Kn/ once   and  returns  b  =  1  if  the commitment opening is valid, and there exists an order identiﬁed by the base Knonce value.
+
+#### Market Clearing
+
+Once all orders have been placed and the batch interval of Υ has elapsed, the auctioneer will attempt to clear the market using the following algorithms:
+
+![Figure4_5_1](figures/figure4_5_1.png?raw=true "Figure4_5_1")
+
+The MatchMake algorithm takes as input the set of valid orders submitted during the past batch interval and outputs a series of tuples that reﬂect properly matched orders.
+Θa represents an order with Otype = Ask, while Θb represents an order with Otype = Bid. Note that since we allow partial matches, a given order may appear multiple times in the ﬁnal match set. We require that a valid implemen- tation be able to perform proper multi-attribute matching due to the existence of the ∆aux portion of an order’s structure.
+
+![Figure4_5_2](figures/figure4_5_2.png?raw=true "Figure4_5_2")
+
+The  MarketClearingPrice  algorithm accepts the set of orders matched by the MatchMake algorithm and returns the market clearing price of the prior batch. The precise market clearing price al- gorithm is left as a free parameter, with algorithms such as ﬁrst-rejected-bid or last-accepted-bid likely being used. Utilizing a single market clearing price is intended to promote fairness and has a number of additional beneﬁts over pay-as-bid auctions [23].
+
+![Figure4_5_3](figures/figure4_5_3.png?raw=true "Figure4_5_3")
+
+The ClearMarket algorithm takes as input a prior set of matched orders within a batch, the auctioneer’s account, the set of accounts involved in the batch, and the market clearing price of a given batch. The algorithm outputs a set of channel leases to be created by a batch along, a set of updated accounts, and an updated version of the auctioneer’s account with any trading fees accrued during market clearing.
+
+❼ As shorthand, we use ∆i to refer to a cleared batch (the set of resulting accounts after the updates have been made to produce the set of desired channel leases).
+
+#### Batch Execution
+
+Once we’ve been able to make a market, and have the description of the re- sulting market state (the accounts and the channel leases to be created), we can now move on to executing the resulting batch. We use the following algorithms to do so:
+
+ConstructBatch(∆i)>=Btm .  The ConstructBatch algorithm takes a valid market clearing, which can be seen as a delta on the auction state, and returns a valid transaction that atomically executes the given batch on the blockchain.
+
+ExecuteBatch(Btm)>=b =.  The ExecuteBatch algorithm takes a fully valid batch and attempts to commit it by conﬁrming the transaction in the target base blockchain. Once the batch has been conﬁrmed, all operations contained within a batch are considered executed, and can be used as inputs to additional iterations of the auction life cycle.
