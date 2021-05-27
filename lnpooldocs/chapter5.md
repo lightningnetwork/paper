@@ -4,7 +4,7 @@ In this section, we present the concept of a Shadowchain, a non-custodial ap- pl
 
 However, further extensions to Bitcoin such as cross-input signature aggrega- tion and covenants could serve to dramatically improve scalability properties of shadowchains.
 
-## 5.1High-Level Description
+## 5.1 High-Level Description
 
 First, we provide a high-level description of the shadowchain application frame- work.
 
@@ -36,7 +36,7 @@ In this section, we present the abstract shadowchain application framework. Appl
 
 First, we introduce the glue that keeps a shadowchain together, the orchestrator:
 
-### Deﬁnition 5.1. (Orchestrator). 
+### Deﬁnition 5.1. (Orchestrator).
 
 The Orchestrator is a non-trusted entity at the root of a shadowchain, parametrized by its long-term public key: Ochain = PO.  The duty of an  Orchestrator is to propose new blocks (the result of a  state transition) to the set of live Lifted UTXOs that make up the shadowchain.
 
@@ -46,7 +46,7 @@ A given Orchestrator is a non-trusted entity, and can be uniquely identiﬁed by
 
 Next, we deﬁne the Lifted UTXO, which is the representation of a user’s state within a given shadow chain:
 
-### Deﬁnition 5.2. (Lifted UTXO). 
+### Deﬁnition 5.2. (Lifted UTXO).
 
 A Lifted UTXO is a tuple, φU = (Asat, Texpiry, Pu, Po), where:
 
@@ -68,7 +68,7 @@ In this section, we present the abstract deﬁnition of a shadowchain, building 
 
 First, we deﬁne the core components of the shadowchain.
 
-### Deﬁnition 5.3. (Shadowchain). 
+### Deﬁnition 5.3. (Shadowchain).
 
 An instantiation of a Shadowchain is deﬁned as a tuple: Σ = (UL, UO, ∆F , Eexe, AT ), where:
 
@@ -130,7 +130,7 @@ ConstructBlock(φlive, Txn, Eexe, ∆F )  BS.  Given inputs of the set of  ’li
 ❼ BS = (Txn, 2φU0 , … … … , φUa |, ∆f , 2φ/U  , … … … , φ/U    |, UA), is the shadowchain
 
 block itself, which is composed of the set of application transaction, input Lifted UTXOs, the resulting output UTXOs after applying the set of state transition functions, and UA any new application-speciﬁc UTXOs
-produced as a result of the state transition function. Lifted UTXOs can be  consumed  fully  by  the  state  transitions,  therefore 入2φU0 , … … … , φUa |入 一入2φ/U0 , … … … , φ/Ua |入 must be given.
+produced as a result of the state transition function. Lifted UTXOs can be  consumed  fully  by  the  state  transitions,  therefore λ2φU0 , … … … , φUa |λ-λ 2φ/U0 , … … … , φ/Ua |λ must be given.
 
 Once a block has been constructed, the orchestrator of the shadowchain now must propose said block to the set of live Lifted UTXOs before it can move onto the next phase of shadowchain operation. As a given user may reject a block, either implicitly due to being oﬄine, or explicitly due to a violation of the shadowchain consensus rules, this phase may be repeated a number of times. The operator will use the following algorithm to propose blocks:
 
