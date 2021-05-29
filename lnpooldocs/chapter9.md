@@ -1,0 +1,12 @@
+
+# 9 Related Work
+
+The Celar Network [33] puts forth a concept of A Liqudity Backing Auction. Their auction diﬀers from ours in that they opt to utilize a Vickery-Clarke- Groves auction, and unlike our double-call auction, the auction described in the system takes place with a designated on-chain Ethereum contract with a single seller. Rather than paying out interest in the currency of the base blockchain, the Celar network opts to instead issue a new sub-currency which is used to rewards liquidity providers, which actually an IOU, thus being subject to default risk. In addition, all order submission and auction clearing takes place on-chain rather than oﬀ-chain as implemented with Lightning Pool.
+
+The Gnosis Prediction [34] market uses an on-chain batched auction to pro- vide liquidity for multiple distinct assets. Compared to our work, all operations happen on-chain rather than oﬀ-chain, and they opt to use mixed-integer linear programming to derive an optional solution for their market clearing target.
+
+Independent Bitcoin developer ZmnSCPxj’s concept of Smart Contracts Un- chained [31] is similar to our Shadowchain overlay application framework. How- ever, their system is based on a concept of escrows which involved a 3rd party, whereas our concept of Lifted UTXOs only concerns the user and the Shad- owchain orchestrator. In addition to this, they implement their system with a single output that’s used by all participants. Shadowchains on the other hand give each participant an individual UTXO, which allows for a more ﬂexible par- ticipant set in proposed batches. Finally, their system may allow for funds to be stolen with the collusion of one of the participants, and the smart contract platform service. Lifted UTXOs within the context of shadowchains are fully non-custodial.
+
+Lisa Neigut, and Casey Rodamor put forth an idea to extend the Lightning p2p network to support liquidity advertisements for peers seeking to solicit new dual funded channels [28]. Compared to our work, their proposal is an adhoc p2p bulletin board without a true venue for market discovery. We also target single funded channels as we note that it’s possible to simulate dual funded channels within our auction using a pair of bid and ask orders matched between the same parties.
+
+Bitreﬁll’s Thor [25] service is similar to our work, however there exist only a single seller (Bitreﬁll) which names a price (no preference incorporation) and doesn’t guarantee a lifetime of the channel.
