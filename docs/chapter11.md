@@ -1,6 +1,6 @@
 ## 11. Use Cases
 
-## 11. 使用场景
+## 11. 应用场景
 
 In addition to helping bitcoin scale, there are many uses for transactions on the Lightning Network:
 
