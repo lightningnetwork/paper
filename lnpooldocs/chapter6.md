@@ -142,3 +142,206 @@ In this modiﬁed ﬂow, notice that the taker returns the pre-generated public 
 
 We note that the channel shim abstraction has a number of independent uses including strong layer isolation for more elaborate multi-party channel protocols. Notice how the base BOLT funding ﬂow is unmodiﬁed, meaning that a higher level application can handle the speciﬁed details of the multi-party transaction protocol, while the unmodiﬁed Lightning node software manages the underlying channel itself.
 
+### 6.1.4 Order Structure
+
+With our concrete account structure and channel lease semantics in place, we’ll now outline the precise structure of orders as implemented in Lightning Pool. As a CLM is a sealed-bid auction, the set of active orders within an auction epoch isn’t known to a given participant within the auction. Instead, bids are submitted directly to the auctioneer, and may optionally be cancelled between batch epochs as well. Using the fundamental unit notion for expressing the quantity of an order, we permit partial matching in addition to specifying a minumum matchable amount by adding a new field Mmatch to an order within the ∆aux set of additional order attributes.
+
+
+#### Order Tag Generation & Validation
+
+Next, we specifying order tag generation and validation. Before verifying an order, the order Θ itself is serialized in order to generate the message digest of the order. This is done by concatenating each item of the order into a single byte stream, with the set of ∆aux attributes specifying a custom serialization mechanism.
+
+For our tag generation, we opt to utilize an SUF-CMA signature scheme.  As we target the base Bitcoin blockchain, Lightning Pool utilizes Schnorr sig- natures implemented over the secp256k1 elliptic curve. In addition to having the trader that submits an order sign the order message digest, we also require that all the backing Lightning nodes of the order also include a signature as well. As the number of backing nodes for a given account may be numerous, rather than accepting individual signatures for each node, we instead require the account operator and all backing nodes to present a single Schnorr signature. As we also want have our order tagging scheme be secure against key rogue-key attacks, we select the MuSig2 multi-signature scheme [10].
+
+Given the MuSig2 multi-signature scheme, we deﬁne the following algorithms used in our order tagging scheme:
+
+❼   Let Sign( P0, . . . , Pi , M )  σ, be an algorithm that returns a valid MuSig2 multi-signature signed by the set of public keys on message M .
+
+❼  Let Verify( P0, . . . , Pi , σ, M )  b be an algorithm that returns b = 1 if the passed signature is a valid MuSig2 multi-signature signed by the set of public keys for the message M .
+
+Given these algorithms, we now deﬁne our order tag generation and valida- tion implementations:
+
+![Figure6_1_4](figures/figure6_1_4.png?raw=true "Figure6_1_4")
+
+We omit the implementations of SubmitOrder and CancelOrder as the de- pend on the speciﬁc environment in which the auctioneer is implemented in. We only add that the pre-image to an order nonce Kn/ once  is known only to the agent that places the order. As we touch on within the future direction section, this commitment structure also has a number of independent uses outside of order cancellation.
+
+### 6.1.5 Node Rating Agencies
+
+Recalling the set of initial requirements that were set our in section 4, it’s criti- cal that Lightning Pool reduces information symmetry for the buyer by allowing them to gauge the quality of the node selling a channel lease before they enter into an agreement. In order to achieve this, we introduce the concept of a Node Rating Agency. An rating’s agency will allow the buyer of a lease to either query the agency in an ad-hoc manner, or specify that they only wish to be matched with nodes that reside on a certain tier.
+
+Let  Tnˆode  =   tˆ0, . . . , tˆn     be  the  set  of  possible  ratings  that  can  be  given  to a  Lightning  Node  with  tˆ0   containing  all  known  Lightning  Nodes,  and   tˆi     > tiˆ+1          i  <  n,  where  n  is  the  number  of  available  tiers.   In  other  words,  we create a series of node sets, with the higher node tiers having less nodes than
+lower tiers. This creates a natural system of concentric circles where as the  tier index increases, the set of nodes shrinks, and eventually only higher quality nodes remain.
+
+Building oﬀ this notion of tiered node sets, we deﬁne the following algorithm for our node rating agency:>
+
+![Figure6_1_5](figures/figure6_1_5.png?raw=true "Figure6_1_5")
+
+Given this algorithm, we now specify our of the additional auxiliary order attribute ∆aux as:
+
+(Ntier, . . . ) = ∆aux
+
+During match making, we then require the constraint that a given bid order Θbid will only be matched with an ask order Θask if the following constraint is met:
+
+Θbid.Ntier >= NodeTier(Θask.Lpub)
+
+
+### 6.1.6 Uniform Price Market Clearing & Matching
+With our order structure, and the notion of the Node Rating Agency outlined, we now move on to the concrete market clearing and match making within Lightning Pool.
+
+#### Order Matching
+
+As mentioned, due to the set of additional constraints outside of simply the posted price and available supply, we employ a multi-attribute mach making algorithm. Speciﬁcally we opt to utilize a greedy algorithm for the purpose of match making, rather than attempt to ﬁnd an optimal solution using techniques such as mixed integer linear programming. In this section, we focus primarily on the set of base attributes, leaving the consideration of a trader’s axillary attribute preferences to later work.
+
+First, we deﬁne an abstract algorithm which will be used to determine if a given ask order Θask is compatible preference-wise to a given bid order Θbid:
+
+❼  MatchPossible(Θbid, Θask)   (b, nunit).  This algorithm returns b = 1 if   the given ask and bid are compatible from a match making perspective. If the orders are compatible, then nunit represents the number of units that can be matched across the two orders.
+
+Given this function we deﬁne our implementation of the MatchMake algo- rithm:
+
+![Figure6_1_6](figures/figure6_1_6.png?raw=true "Figure6_1_6")
+
+We note that several optimizations here are possible to reduce the worst-case running time of the algorithm which we leave open for future work. We also assume that the set of valid orders has been ﬁltered out before being passed into this algorithm based on the current target batch fee rate and the posted max batch fee rate of each order.
+Uniform Price Clearing
+
+Once we’ve had our set of candidate matches, we’ll now move on to the mar- ket clearing phase. During the market clearing phase, two distinct operations are carried out:
+
+❼ A trader’s account state is updated to reﬂect any lease premiums earned due to matches, chain fees paid in the batch execution transaction, fees paid to the auctioneer, and ﬁnally the debit for any sold channels from their account.
+
+❼ We determine the uniform clearing price for a given potential batch.
+
+These two actions comprise the ClearMarket and MarketClearingPrice algorithms. For our market clearing price, we select the Last Accepted Bid market clearing rule, choosing to go with a buyer’s bid marking price. Given this price clearing algorithm, we now deﬁne our implementation of the market clearing algorithms:
+
+![Figure6_1_6_2](figures/figure6_1_6_2.png?raw=true "Figure6_1_6_2")
+
+
+Notice that we omit the observance of chain fees, as that will be applied to each input/output during the later batch construction phase.
+
+### 6.1.7 Auction Batch Execution
+
+Once we’ve cleared the market, we’ll now move onto the batch execution phase. During this phase, we’ll construct the batch transaction which executes a given batch, and also gather all the necessary witnesses for each participant of the batch so we can properly spend their on-chain account outputs. Remember that due to the non-custodial structure, a trader will fully validate a given batch before they sign oﬀ on it.
+
+#### Batch Transaction Construction
+
+A given batch transaction contains the following inputs: the set of trader ac- count inputs involved in the batch, and the input of the master auctioneer itself. In addition to these inputs which can only be spent each each user authorized the proposed batch, we also add the following outputs: a trader’s new incre- mented account output which reﬂects the market clearing, the set of channels created as part of the channel lease, and the incremented auctioneer account. Note that the format of the batch transaction itself may change multiple times during this phase if participants reject the batch, or if fee changes causing the auctioneer to consider a subset of the prior set of orders.
+
+Taking this into consideration, we deﬁne our implementation of Construct- Batch as follows:
+
+![Figure6_1_7](figures/figure6_1_7.png?raw=true "Figure6_1_7")
+
+
+#### Batch Transaction Execution
+
+Once the batch has been constructed, the auctioneer then needs to propose the batch to each trader, and collect the necessary set of signatures required to spend each trader’s account input. During this execution phase, we assume that this is the ﬁnal set of traders that wish to be a part of this batch.  Once  the auctioneer has all the necessary signatures to broadcast a batch, the batch execution transaction can be broadcast, ending this auction epoch.
+
+Batch transaction execution itself is a multi-party protocol wherein the auc- tioneer presents a valid auction batch to all involved parties, the parties verify the batch, before ﬁnally signing oﬀ by resenting valid signatures of the batch (thereby attesting to it) which are require to execute the batch by committing it in the Bitcoin blockchain.
+
+We deﬁne batch execution in the context of Lightning Pool as follows:
+
+![Figure6_1_7_2](figures/figure6_1_7_2.png?raw=true "Figure6_1_7_2")
+
+Once the auctioneer has gathered all the signatures Wi from each partici- pant of the batch, then it can sign its own input in the batch transaction, and broadcast the batch thereby ﬁnalizing execution. We now provide additional insight with respect to the meaning of each of the messages sent above.
+
+❼ The BatchPrepare message kicks oﬀ batch execution and is used to pro- pose  a new potential auction batch to an end user client.  Upon receipt  of this message, the client will attempt to verify the batch using the ValidateBatch algorithm.
+
+❼ If the batch is invalid from the client’s PoV, then a BatchReject message is sent. Upon receipt of the reject message the auctioneer will resume the protocol, excluding the rejecting client.
+
+❼ Otherwise, the client accepts the batch after verifying its integrity by sending the BatchAccept message.
+
+❼ In order to synchronize the creation of funding shims and the channel funding protocol itself, the auctioneer send the BatchSignBegin message. After sending the reject, the taker will register a funding shim to ensure it’s able to properly handle the incoming funding request in the next phase.
+
+❼ Upon receipt of the BatchSignBegin message, the client then is ready to fund the channel, using the leasePoint which is present on the batch execution transaction Btm .
+
+❼ Once the funding is complete (both sides have a valid commitment trans- action), then the trader will sign its input to present a valid signature to the auctioneer, so the batch transaction can be completed.
+
+❼ The ﬁnal set for the auctioneer is to commit the new batch to disk, and broadcast the transaction to the Bitcoin network.
+
+### 6.1.8 Sidecar Channel Market Clearing & Batch Execution
+
+As mentioned in the background section, a Channel Lease Marketplace is able to also implement the abstract notion of a ”sidecar channel”. We begin by ﬁrst deﬁning a sidecar channel as so:
+
+Deﬁnition 6.1. (Sidecar Channel. A Sidecar Channel is deﬁned as Σc =
+
+2Ar, Bs, Cg, Nsatmn , NsatOut |, where:
+
+❼ Ar is the receiver of a new channel which may contain both inbound and outbound liquidity. This party may or may not already be a participant in the CLM.
+
+❼ Bs is the seller of a normal channel lease within the CLM, and holds an active trading account.
+
+❼ Cg is the gifter of a sidecar channel who wishes to onboard Ar to the Lightning Network. Note that Ar may not even have any Bitcoin at all.
+
+❼ Nsatmn is the number of Bitcoin expressed in satoshis of the channel itself, which will be available as inbound channel bandwidth to Ar.
+
+❼  NsatOut  is the number of Bitcoin which is to be pushed [19] (push amt)   to the receiver of the side car channel, allowing them to both send and receive.
+
+At a high level, a sidecar channel allows Alice to buy a channel for Carol via Bob. Pool implements sidecar channels by making a series of small modiﬁcations to the normal marketplace operations. An end-to-end workﬂow resembles the following:
+
+❼ Alice who already has an account in the CLM places an order to buy a channel. However, rather than specifying the public key and connection details of her own node, she uses Carol’s information instead.
+
+❼ During market clearing, if NsatOut > 0, then Alice will pay an additional amount of NsatOut satoshis directly into the account of Bob.
+
+❼ During batch execution, rather than Alice registering a channel shim, she informs Carol to do so in an expectation step. Bob then uses the new NsatOut satoshis in his account to push the Bitcoin over to the channel he created between himself an Alice.
+
+❼ To ensure the agreement is upheld, Carol uses a channel acceptor [27] predicate to validate that the proper amount has been pushed.
+
+Aside from the above modiﬁcations to our market clearing and batch ex- ecution, everything else remains untouched. The end result is the ability to purchase a channel for a 3rd party in the network in a trust-minimized manner. This new ability is akin to being able to insert an edge in the network (a new channel) between any two arbitrary but cooperating parties. As an example, an exchange could use this ﬂow to allow a client to withdraw directly into a new channel.
+)
+
+
+
+### 6.1.9 LSAT as Pool Tickets
+
+As an added layer against spam and resource exhaustion attacks, Lightning Pool uses Lightning Service Authentication Tokens, or LSATs [7] when interacting with all users. In order to perform operations such as creating an account, querying batch snapshots, etc, a valid LSAT is required.  The auctioneer is  able to dynamically raise the price of an LSAT which is expressed in satoshis if anomalous behavior is detected.
+In addition to using LSATs to throttle or rate limit clients, the auctioneer is also able to use them as a mechanism to oﬀer up historical chain data for sale to 3rd party observers (those without active trading accounts) of the system.
+
+## 6.2 The Lightning Pool Shadowchain
+
+In this section, we complete the Lightning Pool system by demonstrating out its implementation of a Channel Lease Marketplace can be implemented using our shadowchain application overlay framework.
+
+### 6.2.1 Lightning Pool Accounts as Lifted UTXOs
+
+First, we link the concept of our non-custodial accounts in the CLM realm to a lifted UTXO. The process of lifting and unlifting a UTXO is simply a series of operations required to create, modify or close an account:
+
+![Figure6_2_1](figures/figure6_2_1.png?raw=true "Figure6_2_1")
+
+
+Note that it’s also possible to upgrade Lifted UTXOs as implemented within Pool, as a given user is able to use the latest features in Bitcoin script to achieve the same functionality. However, due to privacy implications, it may be preferred to have all account scripts, and further all scripts within a batch execution transaction be uniform.
+
+### 6.2.2 Auction Batch Proposal
+
+Next, we move unto patch proposal and acceptance. An auction batch within a CLM maps 1:1 to the concept of blocks in the shadowchain domain. Given this insight, we now deﬁne the ConstructBlock and ProposeBlock algorithms:
+
+![Figure6_2_2](figures/figure6_2_2.png?raw=true "Figure6_2_2")
+
+
+The process of constructing a new block walks through each of the phases within the auction itself. Note that a block in our system can only be constructed if there exist a valid market clearing given the set of orders ( application-speciﬁc transactions). The auctioneer then proposes the block to each party within the BatchPrepare message. Traders are then free to accept or reject a given block.
+
+### 6.2.3 Shadowchain Batch Execution
+
+Now that we’re able to lift/unlift UTXOs and propose blocks within our Shad- owchain, we now deﬁne the series of methods that will be utilized to allow clients to execute the their local version of the state transition function to accept new proposed batches:
+
+![Figure6_2_3](figures/figure6_2_3.png?raw=true "Figure6_2_3")
+
+
+The ExecuteBatch algorithm does most of the heavy lifting here. Note that if for whatever reason, execution fails, then b = 0 is returned, and we resume our normal state machine execution loop. At the end of the CommitBlock algorithm all participants have the latest block (as they need to be given the block in order to sign oﬀ on it), and the block is broadcast to the Bitcoin blockchain. After this phase, it’s possible to continue committing new blocks without waiting for prior blocks to conﬁrm. Due to this ﬂexibility, the Orchestrator of the Lightning Pool shadow chain is then able to optimistically perform transaction cut-through to combine several logical blocks into a single Bitcoin transaction.
+
+### 6.2.4 Unconﬁrmed Batch Cut-Through
+
+Recall that a shadowchain block can also be optimistically aggregated into a single block. In the domain of the Lightning Pool shadowchain, combining blocks requires ensuring that all produced channel leases will still exist in the ﬁnal combined blocks, and the end state of each account remelts any consecutive market clearing opportunities:
+
+![Figure6_2_4](figures/figure6_2_4.png?raw=true "Figure6_2_4")
+
+
+For brevity, we omit the referenced internal algorithms, however the naming is intended to be intuitive. Given a series of blocks F , we need to extract all the inputs referenced in each block (the series of accounts), extract the set of all leases created within the block, and also the ending account state of all accounts involved in the prior blocks. Note that one account may participate in all or some of the prior blocks. The process of block cut-through allows us to only manifest the ending state of their account and elide the intermediate states from the PoV of the blockchain. With these summaries constructed, the auctioneer then construct a new batch, and executes it using the normal algorithms.
+
+Scalability gains are had by only manifesting the ﬁnal state of each account, as well as removing the need to manifest all intermediate transaction within the blockchain. All participants have an incentive to participate in this optimistic block cut-through as they’ll also end up paying less chain fees as they only need to pay for their account input+output,  and any leases created once.   If any     of the intermediate blocks conﬁrm instead of the cut-through block, then the process can be repeated with the new set of unconﬁrmed blocks.
+
+
+### 6.2.5 Auction Upgrades
+
+Finally, we deﬁne the process by which we upgrade the CLM shadowchain itself. As this is an oﬀ-chain process,  each participant of the shadowchain is able    to execute the UpgradeChain algorithm simply by updating their end client software. In addition to this we utilize two upgrade extension points:
+
+❼ The version of a given order.
+
+❼ The batchVersion sent within the BatchPrepare message.
+
+The version in each order allows us to add new order types over time which implement new match making related preference expression, or brand new chan- nel types. The version sent along during batch execution allows us to modify attributes such as the fee sharing scheme, or the structure of the batch execution transaction itself.
